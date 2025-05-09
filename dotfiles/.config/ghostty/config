@@ -2,6 +2,8 @@ theme = Dracula
 font-family = SauceCodePro Nerd Font
 
 window-decoration = false
+background-opacity = 0.8
+background-blur = true
 
 window-inherit-font-size = false
 font-size = 16
