@@ -13,8 +13,8 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 
 sketchybar --bar \
-           position=bottom \
-           topmost=on \
+           position=top \
+           topmost=window \
            height=24 \
            padding_left=0 \
            padding_right=4 \
