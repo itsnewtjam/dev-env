@@ -1,0 +1,9 @@
+theme = Dracula
+font-family = SauceCodePro Nerd Font
+
+window-decoration = false
+
+window-inherit-font-size = false
+font-size = 16
+shell-integration-features = no-cursor
+cursor-style = block

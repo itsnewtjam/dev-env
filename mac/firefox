@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+wget -O firefox.dmg "https://download.mozilla.org/?product=firefox-latest&os=osx&lang=en-US"
+hdiutil attach firefox.dmg
+sudo cp /Volumes/Firefox/Firefox.app /Applications/
+rm firefox.dmg
+
+mkdir -p /Applications/Firefox.app/Contents/Resources/distribution
+cp resources/firefox.json /Applications/Firefox.app/Contents/Resources/distribution/policies.json

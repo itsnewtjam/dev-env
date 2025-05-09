@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# luals
+brew install ninja
+cd $LSPDIR
+git clone https://github.com/LuaLS/lua-language-server
+cd lua-language-server
+./make.sh
+
+# marksman
+brew install marksman
+
+# clangd
+brew install llvm

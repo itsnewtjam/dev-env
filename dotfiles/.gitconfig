@@ -1,0 +1,11 @@
+# This is Git's per-user configuration file.
+[includeIf "gitdir:~/work/"]
+  path = .gitconfig-work
+[includeIf "gitdir:~/school/"]
+  path = .gitconfig-school
+[includeIf "gitdir:~/personal/"]
+  path = .gitconfig-personal
+[commit]
+	gpgsign = true
+[http]
+	postBuffer = 157286400

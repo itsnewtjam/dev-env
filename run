@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+filter=""
+dry="0"
+scripts=""
+
+while [[ $# > 0 ]]; do
+  if [[ $1 == "--dry" ]]; then
+    dry="1"
+  else
+    filter="$1"
+  fi
+  shift
+done
+
+log() {
+  if [[ $dry == "1" ]]; then
+    echo -e "${RED}[DRY RUN]:${NC} $@"
+  else
+    echo -e "$@"
+  fi
+}
+
+execute() {
+  log "${GREEN}execute $@${NC}"
+  if [[ $dry == "1" ]]; then
+    return
+  fi
+  "$@"
+}
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  cd $script_dir
+  if [[ $filter == "" ]] then
+    execute ./linux/_init
+  fi
+  scripts=$(find ./universal ./linux -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  cd $script_dir
+  if !(command -v brew 2>&1 >/dev/null); then
+    execute ./mac/_brew
+  fi
+  if [[ $filter == "" ]] then
+    execute ./mac/_init
+  fi
+  scripts=$(find ./universal ./mac -mindepth 1 -maxdepth 1 -perm +111 -type f -not -name '_*')
+else
+  echo -e "${RED}OS not detected, quitting${NC}"
+  exit 1
+fi
+
+for script in $scripts; do
+  if (echo "$script" | grep -qv "$filter"); then
+    continue;
+  fi
+
+  execute $script
+done

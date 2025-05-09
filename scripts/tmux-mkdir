@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+selected=$(find ~/work/* ~/personal ~/school -mindepth 0 -maxdepth 0 -type d | fzf)
+if [[ -z $selected ]]; then
+  exit 0
+fi
+
+read -p "Directory Name: " dirname
+
+newdir=$selected/$dirname
+
+session_name=$(basename "$newdir" | tr . _)
+
+mkdir $newdir
+
+tmux_running=$(pgrep tmux)
+
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+  tmux new-session -s "$newdir" -c "$newdir"
+  exit 0
+fi
+
+if ! tmux has-session -t=$session_name 2> /dev/null; then
+  tmux new-session -ds "$newdir" -c "$newdir"
+fi
+
+tmux switch-client -t "$newdir"

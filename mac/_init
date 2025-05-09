@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+brew install ripgrep cwebp ffmpeg composer go fzf pinentry-mac mos

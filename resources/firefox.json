@@ -1,0 +1,105 @@
+{
+  "policies": {
+    "ExtensionSettings": {
+      "{446900e4-71c2-419f-a6a7-df9c091e268b}": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi",
+        "default_area": "navbar"
+      },
+      "{74145f27-f039-47ce-a470-a662b129930a}": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/clearurls/latest.xpi"
+      },
+      "linkhints@lydell.github.io": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/linkhints/latest.xpi"
+      },
+      "{7a7a4a92-a2a0-41d1-9fd7-1e92480d612d}": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/styl-us/latest.xpi"
+      },
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi",
+        "default_area": "navbar"
+      },
+      "{b743f56d-1cc1-4048-8ba6-f9c2ab7aa54d}": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/dracula-dark-colorscheme/latest.xpi"
+      }
+    },
+    "Preferences": {
+      "browser.crashReports.unsubmittedCheck.autoSubmit2": {
+        "Value": false,
+        "Status": "user"
+      },
+      "dom.security.https_only_mode": {
+        "Value": true,
+        "Status": "user"
+      },
+      "browser.download.useDownloadDir": {
+        "Value": false,
+        "Status": "user"
+      },
+      "extensions.formautofill.creditCards.enabled": {
+        "Value": false,
+        "Status": "user"
+      },
+      "browser.urlbar.placeholderName": {
+        "Value": "DuckDuckGo",
+        "Status": "user"
+      },
+      "browser.urlbar.placeholderName.private": {
+        "Value": "DuckDuckGo",
+        "Status": "user"
+      },
+      "ui.key.accelKey": {
+        "Value": 224,
+        "Status": "user"
+      }
+    },
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Locked": false,
+      "Cryptomining": true,
+      "EmailTracking": true,
+      "Fingerprinting": true
+    },
+    "SanitizeOnShutdown": {
+      "Cache": true,
+      "Cookies": true,
+      "Downloads": false,
+      "FormData": false,
+      "History": false,
+      "Sessions": false,
+      "SiteSettings": false,
+      "OfflineApps": true,
+      "Locked": false
+    },
+    "FirefoxHome": {
+      "Search": true,
+      "TopSites": false,
+      "SponsoredTopSites": false,
+      "Highlights": false,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Snippets": false,
+      "Locked": false
+    },
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": false
+    },
+    "SearchEngines": {
+      "Default": "DuckDuckGo"
+    },
+    "SearchSuggestEnabled": false,
+    "PromptForDownloadLocation": true,
+    "OfferToSaveLogins": false,
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true
+  }
+}

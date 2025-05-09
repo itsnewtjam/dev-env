@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[1;36m'
+NC='\033[0m'
+
+script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+dry="0"
+os=""
+
+while [[ $# > 0 ]]; do
+  if [[ $1 == "--dry" ]]; then
+    dry="1"
+  fi
+  shift
+done
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  os="linux"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  os="mac"
+else
+  echo -e "${RED}OS not detected, quitting${NC}"
+  exit 1
+fi
+
+log() {
+  if [[ $dry == "1" ]]; then
+    echo -e "${RED}[DRY RUN]:${NC} $@"
+  else
+    echo -e "$@"
+  fi
+}
+
+execute() {
+  log "${GREEN}execute $@${NC}"
+  if [[ $dry == "1" ]]; then
+    return
+  fi
+  "$@"
+}
+
+copy_dir() {
+  from=$1
+  to=$2
+
+  pushd $from > /dev/null
+  dirs=$(find . -mindepth 1 -maxdepth 1 -type d)
+  for dir in $dirs; do
+    execute rm -rf $to/$dir
+    execute cp -r $dir $to/$dir
+  done
+  popd > /dev/null
+}
+
+copy_file() {
+  from=$1
+  to=$2
+  name=$(basename $from)
+
+  execute rm $to/$name
+  execute cp $from $to/$name
+}
+
+echo -e "---------------[ ${CYAN}dev-env${NC} ]---------------"
+echo -e "${CYAN}[OS]: ${NC}Running for ${os}"
+
+echo -e "${CYAN}[GROUP]:${NC} Universal"
+execute mkdir $HOME/personal
+execute mkdir $HOME/school
+execute mkdir $HOME/work
+
+copy_dir scripts $HOME/.local/bin
+
+copy_dir dotfiles/.config $HOME/.config
+
+copy_file dotfiles/.zshrc $HOME
+copy_file dotfiles/.zsh_profile $HOME
+copy_file dotfiles/.gitconfig $HOME
+copy_file dotfiles/.gitconfig-personal $HOME
+copy_file dotfiles/.gitconfig-school $HOME
+copy_file dotfiles/.gitconfig-work $HOME
+
+if [[ $os == "linux" ]]; then
+  echo -e "${CYAN}[GROUP]:${NC} linux"
+  echo "wip"
+fi
+
+if [[ $os == "mac" ]]; then
+  echo -e "${CYAN}[GROUP]:${NC} mac"
+  copy_dir dotfiles/mac/.config $HOME/.config
+fi

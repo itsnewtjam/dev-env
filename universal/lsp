@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+LSPDIR=$HOME/.local/lsp
+
+mkdir $LSPDIR
+
+# html, cssls, jsonls
+sudo npm i -g vscode-langservers-extracted
+
+# css-variables
+sudo npm i -g css-variables-language-server
+
+# ts_ls
+sudo npm install -g typescript typescript-language-server
+
+# phpactor
+cd $LSPDIR
+git clone https://github.com/phpactor/phpactor.git
+cd phpactor
+composer install
+sudo ln -s $LSPDIR/phpactor/bin/phpactor /usr/local/bin/phpactor
+
+# sqlls
+sudo npm i -g sql-language-server
+
+# bashls
+sudo npm i -g bash-language-server
+
+# gopls
+go install golang.org/x/tools/gopls@latest
+
+# yamlls
+sudo npm i -g yaml-language-server
