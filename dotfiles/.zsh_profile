@@ -1,5 +1,7 @@
 alias vim="nvim"
 
+export XDG_CONFIG_HOME=$HOME/.config
+
 export GPG_TTY=$(tty)
 
 export PATH=$HOME/.local/scripts:$PATH
