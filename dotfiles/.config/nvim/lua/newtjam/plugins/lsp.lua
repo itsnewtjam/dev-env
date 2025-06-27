@@ -37,11 +37,32 @@ return {
       lspconfig.marksman.setup({ capabilities = capabilities })
       lspconfig.phpactor.setup({
         capabilities = capabilities,
+        root_dir = function()
+          return vim.fn.getcwd()
+        end,
         init_options = {
           ["indexer.stub_paths"] = {
-            os.getenv('HOME') .. "/ref/joomla/joomla-cms",
-            os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla"
+            os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
+            os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla",
           },
+          ["indexer.exclude_patterns"] = {
+            "*/tests/*",
+            "*/Tests/*",
+            "*/test/*",
+            "*/docs/*",
+            "*/build/*",
+            "*/tmp/*",
+            "*/cache/*",
+            "*/logs/*",
+            "*/node_modules/*",
+            "*/com_joomlaupdate/*",
+          },
+          ["language_server.diagnostic_ignore_codes"] = {
+            "worse.assignment_to_missing_property",
+          },
+          ["language_server_completion.trim_leading_dollar"] = true,
+          ["language_server_phpstan.enabled"] = false,
+          ["language_server_psalm.enabled"] = false,
         },
       })
       lspconfig.sqlls.setup({ capabilities = capabilities })
@@ -73,11 +94,20 @@ return {
         mapping = cmp.mapping.preset.insert({
           ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
           ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-d>'] = cmp.mapping.scroll_docs(4),
           ['<C-y>'] = cmp.mapping.confirm({ select = true }),
           ['<CR>'] = cmp.mapping.confirm({ select = true }),
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
             else
               fallback()
             end

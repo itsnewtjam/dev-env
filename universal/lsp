@@ -11,7 +11,7 @@ sudo npm i -g vscode-langservers-extracted
 sudo npm i -g css-variables-language-server
 
 # ts_ls
-sudo npm install -g typescript typescript-language-server
+sudo npm i -g typescript typescript-language-server
 
 # phpactor
 cd $LSPDIR
