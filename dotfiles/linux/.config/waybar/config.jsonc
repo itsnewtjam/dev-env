@@ -1,0 +1,81 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 32,
+  "spacing": 0,
+  "modules-left": [
+    "hyprland/workspaces",
+    "tray"
+  ],
+  "modules-center": ["hyprland/window"],
+  "modules-right": [
+    "network",
+    "battery",
+    "bluetooth",
+    "pulseaudio",
+    "clock"
+  ],
+  "hyprland/window": {
+    "format": ""
+  },
+  "hyprland/workspaces": {
+    "all-outputs": true
+  },
+  "network": {
+    "format-wifi": " 󰤨 {essid} ",
+    "format-ethernet": "  Wired ",
+    "tooltip-format": " 󰅧 {bandwidthUpBytes} 󰅢 {bandwidthDownBytes}",
+    "format-linked": " 󱘖 {ifname} (No IP) ",
+    "format-disconnected": "  Disconnected ",
+    "format-alt": " 󰤨 {signalStrength}% ",
+    "interval": 1
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": " {icon} {capacity}% ",
+    "format-charging": " 󱐋 {capacity}%",
+	  "interval": 1,
+    "format-icons": ["󰂎", "󰁼", "󰁿", "󰂁", "󰁹"],
+    "tooltip": true
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}% ",
+    "format-muted": " 󰖁 0% ",
+    "format-icons": {
+      "headphone": "  ",
+      "hands-free": "  ",
+      "headset": "  ",
+      "phone": "  ",
+      "portable": "  ",
+      "car": "  ",
+      "default": [
+        "  ",
+        "  ",
+        "  "
+      ]
+    },
+    "on-click-right": "pavucontrol -t 3",
+    "on-click": "pactl -- set-sink-mute 0 toggle"
+  },
+  "clock": {
+    "interval": 1,
+    "timezone": "America/Indiana/Indianapolis",
+    "format": " {:%a %b %Od %T} "
+  },
+  "tray": {
+    "icon-size": 17,
+    "spacing": 6
+  },
+  "bluetooth": {
+    "format": "",
+    "format-connected": "  {device_alias} ",
+    "format-connected-battery": "  {device_alias}{device_battery_percentage}% ",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%"
+  }
+}

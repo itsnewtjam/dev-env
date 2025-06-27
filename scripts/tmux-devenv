@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+tmux_running=$(pgrep tmux)
+
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+  tmux new-session -s "$HOME/dev-env" -c "$HOME/dev-env"
+  exit 0
+fi
+
+if ! tmux has-session -t="$HOME/dev-env" 2> /dev/null; then
+  tmux new-session -ds "$HOME/dev-env" -c "$HOME/dev-env"
+fi
+
+tmux switch-client -t "$HOME/dev-env"

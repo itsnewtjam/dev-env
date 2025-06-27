@@ -1,3 +1,3 @@
-module newtjam.com/laptop-hyper
+module laptop-hyper
 
 go 1.24.3

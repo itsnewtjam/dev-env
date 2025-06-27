@@ -15,7 +15,7 @@ sudo npm i -g typescript typescript-language-server
 
 # phpactor
 cd $LSPDIR
-git clone https://github.com/phpactor/phpactor.git
+git clone https://github.com/phpactor/phpactor.git $LSPDIR/phpactor
 cd phpactor
 composer install
 sudo ln -s $LSPDIR/phpactor/bin/phpactor /usr/local/bin/phpactor

@@ -5,7 +5,12 @@ GREEN='\033[0;32m'
 CYAN='\033[1;36m'
 NC='\033[0m'
 
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+if [ -z $DEV_ENV ]; then
+  script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+else
+  script_dir=$DEV_ENV
+fi
+
 dry="0"
 os=""
 
@@ -71,7 +76,10 @@ execute mkdir $HOME/personal
 execute mkdir $HOME/school
 execute mkdir $HOME/work
 
-copy_dir scripts $HOME/.local/bin
+execute mkdir $HOME/.local/bin
+copy_file scripts/tmux-sessionizer $HOME/.local/bin/
+copy_file scripts/tmux-mkdir $HOME/.local/bin/
+copy_file scripts/tmux-devenv $HOME/.local/bin/
 
 copy_dir dotfiles/.config $HOME/.config
 
@@ -84,7 +92,9 @@ copy_file dotfiles/.gitconfig-work $HOME
 
 if [[ $os == "linux" ]]; then
   echo -e "${CYAN}[GROUP]:${NC} linux"
-  echo "wip"
+  copy_dir dotfiles/linux/.config $HOME/.config
+
+  execute hyprctl reload
 fi
 
 if [[ $os == "mac" ]]; then

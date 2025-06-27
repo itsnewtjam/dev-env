@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+sudo pacman -S lemurs
+
+sudo systemctl disable display-manager.service
+
+sudo systemctl enable lemurs.service
+
+sudo cp $HOME/dev-env/dotfiles/linux/lemurs/config.toml /etc/lemurs/config.toml

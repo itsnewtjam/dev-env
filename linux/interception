@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+mkdir $HOME/newtmaps
+cp -r ./resources/newtmaps/* $HOME/newtmaps/
+
+cd $HOME/newtmaps/laptop-hyper
+go build laptop-hyper
+
+cd $HOME/newtmaps/macbrain
+go build macbrain

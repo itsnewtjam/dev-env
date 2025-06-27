@@ -2,5 +2,5 @@
 
 sudo pacman -S firefox
 
-mkdir -p /etc/firefox/policies
-cp resources/firefox.json /etc/firefox/policies/policies.json
+sudo mkdir -p /etc/firefox/policies
+sudo cp resources/firefox.json /etc/firefox/policies/policies.json
