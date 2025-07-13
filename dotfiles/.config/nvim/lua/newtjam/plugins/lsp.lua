@@ -7,7 +7,7 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "hrsh7th/cmp-nvim-lsp",
-      "L3M0N4D3/LuaSnip",
+      "L3MON4D3/LuaSnip",
       "nvim-java/nvim-java",
       {
         "folke/lazydev.nvim",
@@ -20,7 +20,7 @@ return {
       },
     },
     config = function()
-      require("java").setup({})
+      -- require("java").setup({})
       local cmp = require("cmp")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 

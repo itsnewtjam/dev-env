@@ -3,12 +3,12 @@
 tmux_running=$(pgrep tmux)
 
 if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-  tmux new-session -s "$HOME/dev-env" -c "$HOME/dev-env"
+  tmux new-session -s "$HOME/personal/dev-env" -c "$HOME/personal/dev-env"
   exit 0
 fi
 
-if ! tmux has-session -t="$HOME/dev-env" 2> /dev/null; then
-  tmux new-session -ds "$HOME/dev-env" -c "$HOME/dev-env"
+if ! tmux has-session -t="$HOME/personal/dev-env" 2> /dev/null; then
+  tmux new-session -ds "$HOME/personal/dev-env" -c "$HOME/personal/dev-env"
 fi
 
-tmux switch-client -t "$HOME/dev-env"
+tmux switch-client -t "$HOME/personal/dev-env"
