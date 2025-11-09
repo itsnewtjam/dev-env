@@ -86,9 +86,6 @@ copy_dir dotfiles/.config $HOME/.config
 copy_file dotfiles/.zshrc $HOME
 copy_file dotfiles/.zsh_profile $HOME
 copy_file dotfiles/.gitconfig $HOME
-copy_file dotfiles/.gitconfig-personal $HOME
-copy_file dotfiles/.gitconfig-school $HOME
-copy_file dotfiles/.gitconfig-work $HOME
 
 if [[ $os == "linux" ]]; then
   echo -e "${CYAN}[GROUP]:${NC} linux"
