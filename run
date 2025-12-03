@@ -6,15 +6,12 @@ NC='\033[0m'
 
 script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 filter=""
-skip_universal="0"
 dry="0"
 scripts=""
 
 while [[ $# > 0 ]]; do
   if [[ $1 == "--dry" ]]; then
     dry="1"
-  elif [[ $1 == "--skipu" ]]; then
-    skip_universal="1"
   else
     filter="$1"
   fi
@@ -37,41 +34,12 @@ execute() {
   "$@"
 }
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  cd $script_dir
-  if [[ $filter == "" || $filter == "init" ]]; then
-    if [[ $skip_universal == "0" ]]; then
-      execute ./universal/_init
-    fi
-    execute ./linux/_init
-  fi
-
-  if [[ $skip_universal == "0" ]]; then
-    scripts=$(find ./universal ./linux -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
-  else
-    scripts=$(find ./linux -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
-  fi
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  cd $script_dir
-  if !(command -v brew 2>&1 >/dev/null); then
-    execute ./mac/_brew
-  fi
-  if [[ $filter == "" || $filter == "init" ]]; then
-    if [[ $skip_universal == "0" ]]; then
-      execute ./universal/_init
-    fi
-    execute ./mac/_init
-  fi
-
-  if [[ $skip_universal == "0" ]]; then
-    scripts=$(find ./universal ./mac -mindepth 1 -maxdepth 1 -perm +111 -type f -not -name '_*')
-  else
-    scripts=$(find ./mac -mindepth 1 -maxdepth 1 -perm +111 -type f -not -name '_*')
-  fi
-else
-  echo -e "${RED}OS not detected, quitting${NC}"
-  exit 1
+cd $script_dir
+if [[ $filter == "" || $filter == "init" ]]; then
+  execute ./actions/_init
 fi
+
+scripts=$(find ./actions -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
 
 for script in $scripts; do
   if (echo "$script" | grep -qv "$filter"); then

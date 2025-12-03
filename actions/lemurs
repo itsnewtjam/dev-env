@@ -6,4 +6,4 @@ sudo systemctl disable display-manager.service
 
 sudo systemctl enable lemurs.service
 
-sudo cp $HOME/personal/dev-env/dotfiles/linux/lemurs/config.toml /etc/lemurs/config.toml
+sudo cp $HOME/personal/dev-env/dotfiles/lemurs/config.toml /etc/lemurs/config.toml

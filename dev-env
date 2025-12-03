@@ -12,7 +12,6 @@ else
 fi
 
 dry="0"
-os=""
 
 while [[ $# > 0 ]]; do
   if [[ $1 == "--dry" ]]; then
@@ -20,15 +19,6 @@ while [[ $# > 0 ]]; do
   fi
   shift
 done
-
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  os="linux"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  os="mac"
-else
-  echo -e "${RED}OS not detected, quitting${NC}"
-  exit 1
-fi
 
 log() {
   if [[ $dry == "1" ]]; then
@@ -87,14 +77,4 @@ copy_file dotfiles/.zshrc $HOME
 copy_file dotfiles/.zsh_profile $HOME
 copy_file dotfiles/.gitconfig $HOME
 
-if [[ $os == "linux" ]]; then
-  echo -e "${CYAN}[GROUP]:${NC} linux"
-  copy_dir dotfiles/linux/.config $HOME/.config
-
-  execute hyprctl reload
-fi
-
-if [[ $os == "mac" ]]; then
-  echo -e "${CYAN}[GROUP]:${NC} mac"
-  copy_dir dotfiles/mac/.config $HOME/.config
-fi
+execute hyprctl reload

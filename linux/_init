@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-sudo pacman -S --needed ripgrep ffmpeg composer go fzf udiskie unzip npm interception-tools brightnessctl ttf-sourcecodepro-nerd wl-clipboard cups ghostscript
