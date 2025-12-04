@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-sudo pacman -S --needed ripgrep ffmpeg composer nvm pvgo fzf udiskie unzip npm interception-tools brightnessctl ttf-sourcecodepro-nerd wl-clipboard cups ghostscript less
+sudo pacman -S --needed base-devel ripgrep ffmpeg composer nvm go fzf udiskie unzip usbutils interception-tools brightnessctl ttf-sourcecodepro-nerd wl-clipboard cups ghostscript less xdg-desktop-portal-gtk
 
-# node / npm
-cd $HOME/Downloads
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-nvm install 22
+source ~/.nvm/nvm.sh
+
+nvm install 24
+nvm use 24

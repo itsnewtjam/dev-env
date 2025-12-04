@@ -65,6 +65,7 @@ echo -e "${CYAN}[GROUP]:${NC} Universal"
 execute mkdir $HOME/personal
 execute mkdir $HOME/school
 execute mkdir $HOME/work
+execute mkdir $HOME/aur
 
 execute mkdir $HOME/.local/bin
 copy_file scripts/tmux-sessionizer $HOME/.local/bin/

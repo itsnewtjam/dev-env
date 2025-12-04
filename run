@@ -39,7 +39,11 @@ if [[ $filter == "" || $filter == "init" ]]; then
   execute ./actions/_init
 fi
 
-scripts=$(find ./actions -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
+if [[ $filter == "" ]]; then
+  scripts=$(find ./actions -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
+else
+  scripts=$(find ./actions -mindepth 1 -maxdepth 1 -executable -type f -not -name '_init')
+fi
 
 for script in $scripts; do
   if (echo "$script" | grep -qv "$filter"); then

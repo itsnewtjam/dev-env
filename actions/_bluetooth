@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+sudo pacman -S --needed bluez bluez-utils solaar
+
+sudo modprobe btusb
+
+sudo systemctl enable bluetooth.service

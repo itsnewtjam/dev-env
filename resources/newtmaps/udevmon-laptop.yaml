@@ -1,6 +1,6 @@
-- JOB: "intercept -g $DEVNODE | /home/newt/newtmaps/macbrain/macbrain | uinput -d $DEVNODE"
+- JOB: "intercept -g $DEVNODE | $HOME/newtmaps/macbrain/macbrain | uinput -d $DEVNODE"
   DEVICE:
     NAME: "{{DEVICE_NAME}}"
-- JOB: "intercept -g $DEVNODE | /home/newt/newtmaps/laptop-hyper/laptop-hyper | uinput -d $DEVNODE"
+- JOB: "intercept -g $DEVNODE | $HOME/newtmaps/laptop-hyper/laptop-hyper | uinput -d $DEVNODE"
   DEVICE:
     NAME: "{{DEVICE_NAME}}"
