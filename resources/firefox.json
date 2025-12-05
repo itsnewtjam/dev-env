@@ -52,10 +52,6 @@
       "browser.urlbar.placeholderName.private": {
         "Value": "DuckDuckGo",
         "Status": "user"
-      },
-      "ui.key.accelKey": {
-        "Value": 224,
-        "Status": "user"
       }
     },
     "EnableTrackingProtection": {
