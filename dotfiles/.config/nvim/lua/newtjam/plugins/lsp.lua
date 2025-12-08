@@ -24,22 +24,19 @@ return {
       local cmp = require("cmp")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-      local lspconfig = require("lspconfig")
-      lspconfig.bashls.setup({ capabilities = capabilities })
-      lspconfig.clangd.setup({ capabilities = capabilities })
-      lspconfig.cssls.setup({ capabilities = capabilities })
-      lspconfig.css_variables.setup({ capabilities = capabilities })
-      lspconfig.gopls.setup({ capabilities = capabilities })
-      lspconfig.html.setup({ capabilities = capabilities })
-      lspconfig.jsonls.setup({ capabilities = capabilities })
-      lspconfig.jdtls.setup({ capabilities = capabilities })
-      lspconfig.lua_ls.setup({ capabilities = capabilities })
-      lspconfig.marksman.setup({ capabilities = capabilities })
-      lspconfig.phpactor.setup({
+      vim.lsp.config("bashls", { capabilities = capabilities })
+      vim.lsp.config("clangd", { capabilities = capabilities })
+      vim.lsp.config("cssls", { capabilities = capabilities })
+      vim.lsp.config("css_variables", { capabilities = capabilities })
+      vim.lsp.config("gopls", { capabilities = capabilities })
+      vim.lsp.config("html", { capabilities = capabilities })
+      vim.lsp.config("jsonls", { capabilities = capabilities })
+      vim.lsp.config("jdtls", { capabilities = capabilities })
+      vim.lsp.config("lua_ls", { capabilities = capabilities })
+      vim.lsp.config("marksman", { capabilities = capabilities })
+      vim.lsp.config("phpactor", {
         capabilities = capabilities,
-        root_dir = function()
-          return vim.fn.getcwd()
-        end,
+        root_patterns = { "*.php" },
         init_options = {
           ["indexer.stub_paths"] = {
             os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
@@ -65,12 +62,27 @@ return {
           ["language_server_psalm.enabled"] = false,
         },
       })
-      lspconfig.sqlls.setup({ capabilities = capabilities })
-      lspconfig.ts_ls.setup({ capabilities = capabilities })
-      lspconfig.yamlls.setup({ capabilities = capabilities })
+      vim.lsp.config("sqlls", { capabilities = capabilities })
+      vim.lsp.config("ts_ls", { capabilities = capabilities })
+      vim.lsp.config("yamlls", { capabilities = capabilities })
+
+      vim.lsp.enable("bashls")
+      vim.lsp.enable("clangd")
+      vim.lsp.enable("cssls")
+      vim.lsp.enable("css_variables")
+      vim.lsp.enable("gopls")
+      vim.lsp.enable("html")
+      vim.lsp.enable("jsonls")
+      vim.lsp.enable("jdtls")
+      vim.lsp.enable("lua_ls")
+      vim.lsp.enable("marksman")
+      vim.lsp.enable("phpactor")
+      vim.lsp.enable("sqlls")
+      vim.lsp.enable("ts_ls")
+      vim.lsp.enable("yamlls")
 
       vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
+        callback = function()
           vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end)
           vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end)
           vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end)
