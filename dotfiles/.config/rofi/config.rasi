@@ -2,8 +2,11 @@
 
 configuration {
     show-icons:      true;
+    icon-theme:      "breeze-dark";
     display-drun:    "";
+    display-combi:   "";
     disable-history: false;
+    combi-display-format: "{text}";
 }
 
 * {

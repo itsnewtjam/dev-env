@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+if [ -z "$@" ]; then
+  echo -en "Shutdown\0icon\x1fsystem-shutdown-symbolic\n"
+  echo -en "Reboot\0icon\x1fsystem-reboot-symbolic\x1fmeta\x1fRestart\n"
+else
+  case "$@" in
+    *Shutdown*)
+      systemctl poweroff
+      ;;
+    *Reboot*)
+      systemctl reboot
+      ;;
+  esac
+fi

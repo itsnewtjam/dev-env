@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-sudo pacman -S rofi-wayland
+sudo pacman -S rofi-wayland rofi-calc

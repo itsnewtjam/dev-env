@@ -6,6 +6,10 @@ export HOSTNAME=$(uname -n)
 
 export GPG_TTY=$(tty)
 
+if [ -z "$SSH_AUTH_SOCK" ]; then
+  eval $(ssh-agent) > /dev/null
+fi
+
 export PATH=$HOME/.local/scripts:$PATH
 export PATH=$HOME/.local/bin:$PATH
 export PATH=$(go env GOPATH)/bin:$PATH
