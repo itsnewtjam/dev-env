@@ -1,0 +1,337 @@
+#!/usr/bin/env bash
+
+CSV_PATH="$HOME/.pocketwatch/sessions.csv"
+
+if [ ! -f "$CSV_PATH" ]; then
+  echo "No session data found at $CSV_PATH"
+  exit 1
+fi
+
+show_help() {
+  cat << EOF
+Pocketwatch Session Reports
+
+Usage: $(basename "$0") [COMMAND] [OPTIONS]
+
+Commands:
+    today           Show today's sessions
+    yesterday       Show yesterday's sessions
+    week            Show this week's summary
+    month           Show this month's summary
+    summary [N]     Show summary of last N days (default: 7)
+    label [LABEL]   Show all sessions for a specific label
+    all             Show all sessions (last 50)
+    stats           Show overall statistics
+    truncate [N]    Keep only last N days of data (default: 90)
+    help            Show this help message
+
+Examples:
+    $(basename "$0") today
+    $(basename "$0") summary 14
+    $(basename "$0") label "Writing code"
+    $(basename "$0") truncate 30
+EOF
+}
+
+format_duration() {
+  local seconds=$1
+  local hours=$((seconds / 3600))
+  local mins=$(((seconds % 3600) / 60))
+  
+  if [ $hours -gt 0 ]; then
+    printf "%dh %dm" "$hours" "$mins"
+  else
+    printf "%dm" "$mins"
+  fi
+}
+
+show_today() {
+  local today=$(date +%Y-%m-%d)
+  echo "=== Today's Sessions ($today) ==="
+  awk -F',' -v today="$today" '
+    NR > 1 && $4 ~ today {
+      split($4, start, "T")
+      split(start[2], time, ":")
+      printf "%-8s %-30s %-8s %5d min\n", time[1]":"time[2], $2, $3, $6/60
+    }
+  ' "$CSV_PATH" | column -t
+  local total=$(awk -F',' -v today="$today" '
+    NR > 1 && $4 ~ today { sum += $6 }
+    END { print sum }
+  ' "$CSV_PATH")
+    
+  if [ -n "$total" ] && [ "$total" != "0" ]; then
+    echo "Total time today: $(format_duration $total)"
+  else
+    echo "No sessions recorded today"
+  fi
+}
+
+show_yesterday() {
+  local yesterday=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
+  echo "=== Yesterday's Sessions ($yesterday) ==="
+  awk -F',' -v day="$yesterday" '
+    NR > 1 && $4 ~ day {
+      split($4, start, "T")
+      split(start[2], time, ":")
+      printf "%-8s %-30s %-8s %5d min\n", time[1]":"time[2], $2, $3, $6/60
+    }
+  ' "$CSV_PATH" | column -t
+  local total=$(awk -F',' -v day="$yesterday" '
+    NR > 1 && $4 ~ day { sum += $6 }
+    END { print sum }
+  ' "$CSV_PATH")
+    
+  if [ -n "$total" ] && [ "$total" != "0" ]; then
+    echo "Total time yesterday: $(format_duration $total)"
+  else
+    echo "No sessions recorded yesterday"
+  fi
+}
+
+show_week() {
+  echo "=== This Week's Summary ==="
+  local days_ago=7
+  awk -F',' -v days=$days_ago '
+    BEGIN {
+      cmd = "date -d \"" days " days ago\" +%Y-%m-%d 2>/dev/null || date -v-" days "d +%Y-%m-%d"
+      cmd | getline cutoff
+      close(cmd)
+    }
+    NR > 1 && $4 >= cutoff {
+      split($4, date, "T")
+      day = date[1]
+      type_count[day"_"$3]++
+      day_total[day] += $6
+      type_total[day"_"$3] += $6
+      days[day] = 1
+    }
+    END {
+      print "Date         Sessions  Work     Break    Total"
+      print "---------------------------------------------------"
+      for (day in days) {
+        work = type_total[day"_work"] / 60
+        brk = type_total[day"_break"] / 60
+        total = day_total[day] / 60
+        printf "%-12s %3d       %-7d  %-7d  %-7d min\n", 
+          day, 
+          (type_count[day"_work"] + type_count[day"_break"] + type_count[day"_custom"]),
+          work, brk, total
+      }
+    }
+  ' "$CSV_PATH" | sort -r
+}
+
+show_month() {
+  echo "=== This Month's Summary ==="
+  local current_month=$(date +%Y-%m)
+  awk -F',' -v month="$current_month" '
+    NR > 1 && $4 ~ month {
+      total += $6
+      if ($3 == "work") work += $6
+      if ($3 == "break") brk += $6
+      if ($3 == "custom") custom += $6
+      count++
+    }
+    END {
+      printf "Total sessions: %d\n", count
+      printf "Work time:      %.1f hours\n", work/3600
+      printf "Break time:     %.1f hours\n", brk/3600
+      printf "Custom time:    %.1f hours\n", custom/3600
+      printf "Total time:     %.1f hours\n", total/3600
+    }
+  ' "$CSV_PATH"
+}
+
+show_summary() {
+  local days=${1:-7}
+  echo "=== Summary (Last $days Days) ==="
+  awk -F',' -v days=$days '
+    BEGIN {
+      cmd = "date -d \"" days " days ago\" +%Y-%m-%d 2>/dev/null || date -v-" days "d +%Y-%m-%d"
+      cmd | getline cutoff
+      close(cmd)
+    }
+    NR > 1 && $4 >= cutoff {
+      total += $6
+      if ($3 == "work") {
+        work += $6
+        work_count++
+      }
+      if ($3 == "break") {
+        brk += $6
+        break_count++
+      }
+      if ($3 == "custom") {
+        custom += $6
+        custom_count++
+      }
+    }
+    END {
+      printf "Work sessions:   %3d  (%.1f hours)\n", work_count, work/3600
+      printf "Break sessions:  %3d  (%.1f hours)\n", break_count, brk/3600
+      printf "Custom sessions: %3d  (%.1f hours)\n", custom_count, custom/3600
+      printf "-----------------------------------\n"
+      printf "Total:           %3d  (%.1f hours)\n", work_count+break_count+custom_count, total/3600
+    }
+  ' "$CSV_PATH"
+}
+
+show_by_label() {
+  local search_label="$1"
+  
+  if [ -z "$search_label" ]; then
+    echo "Please specify a label to search for"
+    exit 1
+  fi
+  
+  echo "=== Sessions for: $search_label ==="
+  awk -F',' -v label="$search_label" '
+    NR > 1 && tolower($2) ~ tolower(label) {
+      split($4, start, "T")
+      split(start[2], time, ":")
+      printf "%-10s %-8s %-30s %5d min\n", start[1], time[1]":"time[2], $2, $6/60
+      total += $6
+      count++
+    }
+    END {
+      if (count > 0) {
+        print ""
+        printf "Total: %d sessions, %.1f hours\n", count, total/3600
+      } else {
+        print "No sessions found matching that label"
+      }
+    }
+  ' "$CSV_PATH" | column -t
+}
+
+show_all() {
+  echo "=== All Sessions (Last 50) ==="
+  tail -n 51 "$CSV_PATH" | awk -F',' '
+    NR > 1 {
+      split($4, start, "T")
+      split(start[2], time, ":")
+      printf "%-10s %-8s %-30s %-8s %5d min\n", start[1], time[1]":"time[2], $2, $3, $6/60
+    }
+  ' | column -t
+}
+
+show_stats() {
+  echo "=== Overall Statistics ==="
+  awk -F',' '
+    NR > 1 {
+      total += $6
+      count++
+      if ($3 == "work") {
+        work += $6
+        work_count++
+        label_time[$2] += $6
+        label_count[$2]++
+      }
+      if ($3 == "break") {
+        brk += $6
+        break_count++
+      }
+      if ($3 == "custom") {
+        custom += $6
+        custom_count++
+      }
+    }
+    END {
+      print "Summary:"
+      printf "  Total sessions:  %d\n", count
+      printf "  Total time:      %.1f hours\n\n", total/3600
+      
+      print "By type:"
+      printf "  Work:    %3d sessions  (%.1f hours)\n", work_count, work/3600
+      printf "  Break:   %3d sessions  (%.1f hours)\n", break_count, brk/3600
+      printf "  Custom:  %3d sessions  (%.1f hours)\n\n", custom_count, custom/3600
+      
+      print "Top 10 work labels:"
+      for (label in label_time) {
+        printf "  %-30s %3d sessions  %.1f hours\n", label, label_count[label], label_time[label]/3600
+      }
+    }
+  ' "$CSV_PATH" | head -n -1
+  
+  # Sort and show top 10
+  awk -F',' '
+    NR > 1 && $3 == "work" {
+      label_time[$2] += $6
+      label_count[$2]++
+    }
+    END {
+      for (label in label_time) {
+        printf "%s|%d|%.1f\n", label, label_count[label], label_time[label]/3600
+      }
+    }
+  ' "$CSV_PATH" | sort -t'|' -k3 -rn | head -10 | awk -F'|' '{
+    printf "  %-30s %3d sessions  %.1f hours\n", $1, $2, $3
+  }'
+}
+
+truncate_data() {
+  local keep_days=${1:-90}
+  local backup="$CSV_PATH.backup.$(date +%Y%m%d_%H%M%S)"
+    
+  echo "Creating backup at: $backup"
+  cp "$CSV_PATH" "$backup"
+    
+  local cutoff=$(date -d "$keep_days days ago" +%Y-%m-%d 2>/dev/null || date -v-${keep_days}d +%Y-%m-%d)
+  echo "Keeping data from $cutoff onwards..."
+    
+  local count_before=$(wc -l < "$CSV_PATH")
+    
+  # Keep header and rows after cutoff date
+  awk -F',' -v cutoff="$cutoff" '
+    NR == 1 || $4 >= cutoff
+  ' "$CSV_PATH" > "$CSV_PATH.tmp"
+  
+  mv "$CSV_PATH.tmp" "$CSV_PATH"
+    
+  local count_after=$(wc -l < "$CSV_PATH")
+  local removed=$((count_before - count_after))
+    
+  echo "Removed $removed old sessions"
+  echo "Kept $((count_after - 1)) sessions"
+  echo "Backup saved at: $backup"
+}
+
+# Main command handling
+case "${1:-today}" in
+  today)
+    show_today
+    ;;
+  yesterday)
+    show_yesterday
+    ;;
+  week)
+    show_week
+    ;;
+  month)
+    show_month
+    ;;
+  summary)
+    show_summary "$2"
+    ;;
+  label)
+    show_by_label "$2"
+    ;;
+  all)
+    show_all
+    ;;
+  stats)
+    show_stats
+    ;;
+  truncate)
+    truncate_data "$2"
+    ;;
+  help|--help|-h)
+    show_help
+    ;;
+  *)
+    echo "Unknown command: $1"
+    echo "Run '$(basename "$0") help' for usage information"
+    exit 1
+    ;;
+esac

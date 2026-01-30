@@ -8,33 +8,16 @@ mkdir $LSPDIR
 
 sudo rm -rf $LSPDIR/*
 
-sudo pacman -S --needed lua-language-server marksman
-
-# html, cssls, jsonls
-npm i -g vscode-langservers-extracted
-
-# css-variables
-npm i -g css-variables-language-server
-
-# ts_ls
-npm i -g typescript typescript-language-server
+sudo pacman -S --needed lua-language-server marksman bash-language-server yaml-language-server typescript typescript-language-server gopls vscode-html-languageserver vscode-css-languageserver vscode-json-languageserver
 
 # phpactor
 cd $LSPDIR
-git clone https://github.com/phpactor/phpactor.git $LSPDIR/phpactor
+git clone https://github.com/phpactor/phpactor.git
 cd phpactor
 composer update
 composer install
-sudo ln -s $LSPDIR/phpactor/bin/phpactor /usr/local/bin/phpactor
+cd /usr/local/bin
+sudo ln -s $LSPDIR/phpactor/bin/phpactor phpactor
 
 # sqlls
 npm i -g sql-language-server
-
-# bashls
-npm i -g bash-language-server
-
-# gopls
-go install golang.org/x/tools/gopls@latest
-
-# yamlls
-npm i -g yaml-language-server

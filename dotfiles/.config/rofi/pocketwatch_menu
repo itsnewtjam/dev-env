@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+SOCKET="/tmp/pocketwatch.sock"
+
+send_command() {
+  echo "$1" | nc -U -N "$SOCKET" 2>/dev/null
+}
+
+get_presets() {
+  local response=$(send_command '{"action":"presets"}')
+  echo $response | jq -r '.data[] | "\(.name)|\(.work)|\(.break)"'
+}
+
+get_status() {
+  send_command '{"action":"status"}'
+}
+
+if ! [ -S "$SOCKET" ]; then
+  notify-send -u critical "Pocketwatch" "Daemon not running. Start with: systemctl --user start pocketwatch"
+  exit 1
+fi
+
+status=$(get_status)
+is_active=$(echo "$status" | jq -r '.data.active // false')
+is_paused=$(echo "$status" | jq -r '.data.paused // false')
+
+menu_items=()
+
+if [ "$is_active" = "true" ]; then
+  if [ "$is_paused" = "true" ]; then
+    menu_items+=("󰐊 Resume")
+  else
+    menu_items+=("󰏤 Pause")
+  fi
+  menu_items+=("󰙧 Stop")
+else
+  while IFS='|' read -r name work_mins break_mins; do
+    menu_items+=(" $name ($work_mins/$break_mins)")
+  done < <(get_presets)
+
+  menu_items+=("󰔛 Custom Timer")
+fi
+
+selected=$(printf '%s\n' "${menu_items[@]}" | rofi -dmenu -p "Pocketwatch" -i)
+
+if [ -z "$selected" ]; then
+  exit 0
+fi
+
+if [[ "$selected" == "󰏤 Pause" ]]; then
+  send_command '{"action":"pause"}' > /dev/null
+  notify-send "Pocketwatch" "Timer paused"
+
+elif [[ "$selected" == "󰐊 Resume" ]]; then
+  send_command '{"action":"resume"}' > /dev/null
+  notify-send "Pocketwatch" "Timer resumed"
+
+elif [[ "$selected" == "󰙧 Stop" ]]; then
+  send_command '{"action":"stop"}' > /dev/null
+  notify-send "Pocketwatch" "Timer stopped"
+
+elif [[ "$selected" == "󰔛 Custom Timer" ]]; then
+  label=$(echo "" | rofi -dmenu -p "Enter label" -i)
+  if [ -n "$label" ]; then
+    cmd=$(jq -nc --arg label "$label" '{"action":"start_custom","data":{"label":$label}}')
+    send_command "$cmd" > /dev/null
+    notify-send "Pocketwatch" "Custom timer started: $label"
+  fi
+
+elif [[ "$selected" =~ \ (.+)\ \(([0-9]+)/([0-9]+)\) ]]; then
+  preset_name="${BASH_REMATCH[1]}"
+  work_mins="${BASH_REMATCH[2]}"
+  break_mins="${BASH_REMATCH[3]}"
+
+  choice=$(printf "Work Session\nBreak Session" | rofi -dmenu -p "$preset_name" -i)
+
+  if [ "$choice" == "Work Session" ]; then
+    label=$(echo "" | rofi -dmenu -p "Enter work label" -i)
+    if [ -n "$label" ]; then
+      cmd=$(jq -nc --arg label "$label" --argjson duration "$work_mins" \
+        '{"action":"start_work","data":{"label":$label,"duration":$duration}}')
+      send_command "$cmd" > /dev/null
+      notify-send "Pocketwatch" "Started: $label ($work_mins min)"
+    fi
+  elif [ "$choice" == "Break Session" ]; then
+    cmd=$(jq -nc --argjson duration "$break_mins" \
+      '{"action":"start_break","data":{"duration":$duration}}')
+    send_command "$cmd" > /dev/null
+    notify-send "Pocketwatch" "Break started ($break_mins min)"
+  fi
+fi

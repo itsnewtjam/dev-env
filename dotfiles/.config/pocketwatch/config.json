@@ -1,0 +1,19 @@
+{
+  "presets": [
+    {
+      "name": "Standard",
+      "work": 25,
+      "break": 5
+    },
+    {
+      "name": "Long",
+      "work": 50,
+      "break": 10
+    },
+    {
+      "name": "Short",
+      "work": 15,
+      "break": 3
+    }
+  ]
+}

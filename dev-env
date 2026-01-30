@@ -78,6 +78,8 @@ execute mkdir $HOME/.local/bin
 copy_file scripts/tmux-sessionizer $HOME/.local/bin/
 copy_file scripts/tmux-mkdir $HOME/.local/bin/
 copy_file scripts/tmux-devenv $HOME/.local/bin/
+copy_file scripts/optvideo4web $HOME/.local/bin/
+copy_file scripts/time-report $HOME/.local/bin/
 
 copy_dir dotfiles/.config $HOME/.config
 copy_file dotfiles/.config/hypr/host/$HOSTNAME.conf $HOME/.config/hypr hostname.conf

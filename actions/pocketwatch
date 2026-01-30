@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+cd $HOME
+git clone https://github.com/itsnewtjam/pocketwatch.git 
+cd pocketwatch
+
+go build -o pocketwatch-daemon main.go
+
+cp pocketwatch-daemon $HOME/.local/bin/
+chmod +x $HOME/.local/bin/pocketwatch-daemon
+
+cp pocketwatch.service $HOME/.config/systemd/user/
+
+systemctl --user daemon-reload
+systemctl --user enable pocketwatch.service
+systemctl --user start pocketwatch.service
