@@ -101,7 +101,8 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source ~/.zsh_profile
 
-source ~/.nvm/nvm.sh
+source ~/.nvm/nvm.sh 2&>/dev/null
+source ~/.config/nvm/nvm.sh 2&>/dev/null
 
 # Shopify Hydrogen alias to local projects
 alias h2='$(npm prefix -s)/node_modules/.bin/shopify hydrogen'
