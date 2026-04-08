@@ -32,7 +32,39 @@ return {
       vim.lsp.config("html", { capabilities = capabilities })
       vim.lsp.config("jsonls", { capabilities = capabilities })
       vim.lsp.config("jdtls", { capabilities = capabilities })
-      vim.lsp.config("lua_ls", { capabilities = capabilities })
+      vim.lsp.config("lua_ls", {
+        capabilities = capabilities,
+        on_init = function(client)
+          if client.workspace_folders then
+            local path = client.workspace_folders[1].name
+            if 
+              path ~= vim.fn.stdpath('config')
+              and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.json'))
+            then
+              return
+            end
+          end
+
+          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+            runtime = {
+              version = 'LuaJIT',
+              path = {
+                'lua/?.lua',
+                'lua/?/init.lua',
+              },
+            },
+            workspace = {
+              checkThirdParty = false,
+              library = {
+                vim.env.VIMRUNTIME,
+              },
+            },
+          })
+        end,
+        settings = {
+          Lua = {},
+        },
+      })
       vim.lsp.config("marksman", { capabilities = capabilities })
       vim.lsp.config("phpactor", {
         capabilities = capabilities,

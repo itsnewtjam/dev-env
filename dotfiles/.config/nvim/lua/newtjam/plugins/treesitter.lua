@@ -12,6 +12,7 @@ return {
           "lua",
           "javascript",
           "typescript",
+          "graphql",
           "json",
           "html",
           "php",

@@ -16,6 +16,7 @@ sudo pacman -S --needed \
 	interception-tools \
 	brightnessctl \
 	ttf-sourcecodepro-nerd \
+  ttf-ibm-plex \
 	wl-clipboard \
 	cups \
 	ghostscript \
@@ -30,10 +31,18 @@ sudo pacman -S --needed \
 	libwebp-utils \
 	jq \
 	openbsd-netcat \
-	nwg-look
+	nwg-look \
+  hyprshutdown
 
 source ~/.nvm/nvm.sh
 source ~/.config/nvm/nvm.sh
 
 nvm install 24
 nvm use 24
+
+cd $HOME/aur
+
+git clone https://aur.archlinux.org/yay.git
+cd yay
+
+makepkg -si
