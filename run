@@ -4,22 +4,28 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-filter=""
-dry="0"
-scripts=""
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+FILTER=""
+DRY=false
+ALL=false
+ACTIONS=""
 
-while [[ $# > 0 ]]; do
-  if [[ $1 == "--dry" ]]; then
-    dry="1"
-  else
-    filter="$1"
-  fi
-  shift
-done
+usage() {
+  local prog=${0##*/}
+  cat << EOF
+Usage: $prog [options]
+
+Run dev-env setup actions.
+
+Options
+  -h    Print usage message
+  -d    Perform a dry run (no execution)
+  -a    Run all actions (skips actions starting with '_' except for '__init')
+EOF
+}
 
 log() {
-  if [[ $dry == "1" ]]; then
+  if $DRY; then
     echo -e "${RED}[DRY RUN]:${NC} $@"
   else
     echo -e "$@"
@@ -28,27 +34,33 @@ log() {
 
 execute() {
   log "${GREEN}execute $@${NC}"
-  if [[ $dry == "1" ]]; then
+  if $DRY; then
     return
   fi
   "$@"
 }
 
-cd $script_dir
-if [[ $filter == "" || $filter == "init" ]]; then
-  execute ./actions/_init
-fi
+main() {
+  local opt OPTIND OPTARG
+  while getopts 'dah' opt; do
+    case "$opt" in
+      d) DRY=true;;
+      a) ALL=true;;
+      h) usage; return 0;;
+      *) usage; return 1;;
+    esac
+  done
 
-if [[ $filter == "" ]]; then
-  scripts=$(find ./actions -mindepth 1 -maxdepth 1 -executable -type f -not -name '_*')
-else
-  scripts=$(find ./actions -mindepth 1 -maxdepth 1 -executable -type f -not -name '_init')
-fi
-
-for script in $scripts; do
-  if (echo "$script" | grep -qv "$filter"); then
-    continue;
+  cd $SCRIPT_DIR
+  if $ALL; then
+    selected_actions=$(find ./actions -executable -type f -not -name '_[a-z]*' -printf '%f\n' | LC_COLLATE=C sort)
+  else
+    selected_actions=$(find ./actions -executable -type f -printf '%f\n' | LC_COLLATE=C sort -r | fzf -m --bind 'space:toggle+clear-query' --marker ' ')
   fi
 
-  execute $script
-done
+  for action in $selected_actions; do
+    execute ./actions/$action
+  done
+}
+
+main "$@"

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+SPINNER_PID=
+
+_print-spinner() {
+  local chars=(
+    ⠁ ⠂ ⠄ ⡀ ⡈ ⡐ ⡠ ⣀ ⣁ ⣂ ⣄ ⣌ ⣔ ⣤ ⣥ ⣦ ⣮ ⣶ ⣷ ⣿ ⡿ ⠿ ⢟ ⠟ ⡛ ⠛ ⠫ ⢋ ⠋ ⠍ ⡉ ⠉ ⠑ ⠡ ⢁
+  )
+  local c
+  while true; do
+    for c in "${chars[@]}"; do
+      printf ' %s\r' "$c"
+      sleep 0.05
+    done
+  done
+  echo
+}
+
+_cleanup() {
+  if [[ -n $SPINNER_PID ]]; then
+    printf '\e[?25h'
+    kill "$SPINNER_PID"
+  fi
+}
+
+spinner() {
+  if (($# == 0)); then
+    return 1
+  fi
+
+  trap _cleanup EXIT
+
+  printf '\e[?25l'
+  _print-spinner &
+  SPINNER_PID=$!
+
+  "$@"
+  
+  _cleanup
+}

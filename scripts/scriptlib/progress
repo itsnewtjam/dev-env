@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+progress-bar() {
+  local current=$1
+  local total=$2
+
+  local filled='█'
+  local empty='░'
+  local percent_done=$((current * 100 / total))
+
+  local suffix=" $current/$total ($percent_done%)"
+
+  local length=$(($COLUMNS - ${#suffix} - 2))
+  local cells=$((percent_done * length / 100))
+
+  local i
+  local bar=' '
+  for ((i = 0; i < cells; i++)) do
+    bar+=$filled
+  done
+  for ((i = cells; i < length; i++)) do
+    bar+=$empty
+  done
+  bar+=' '
+  bar+=$suffix
+
+  printf '\e7' # save cursor
+  printf '\e[%d;%dH' "$LINES" 0 # move to bottom
+  printf '\e[0K' # clear line
+  printf '%s' "$bar" # print bar
+  printf '\e8' # restore cursor
+}
+
+progress-init() {
+  shopt -s checkwinsize
+  (:)
+
+  trap progress-cleanup EXIT
+  trap progress-init WINCH
+
+  printf '\n'
+  printf '\e7' # save cursor
+  printf '\e[%d;%dr' 0 "$((LINES - 1))" # set scrollable
+  printf '\e8' # restore cursor
+  printf '\e[1A' # move up 1
+}
+
+progress-cleanup() {
+  printf '\e7' # save cursor
+  printf '\e[%d;%dr' 0 "$LINES" # reset scrollable
+  printf '\e[%d;%dH' "$LINES" 0 # move to bottom
+  printf '\e[0K' # clear line
+  printf '\e8' # restore cursor
+}

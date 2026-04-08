@@ -8,7 +8,18 @@ mkdir $LSPDIR
 
 sudo rm -rf $LSPDIR/*
 
-sudo pacman -S --needed lua-language-server marksman bash-language-server yaml-language-server typescript typescript-language-server gopls vscode-html-languageserver vscode-css-languageserver vscode-json-languageserver
+sudo pacman -S --needed \
+  lua-language-server \
+	marksman \
+	bash-language-server \
+	yaml-language-server \
+	typescript \
+	typescript-language-server \
+	gopls \
+	vscode-html-languageserver \
+	vscode-css-languageserver \
+	vscode-json-languageserver \
+  pyright
 
 # phpactor
 cd $LSPDIR

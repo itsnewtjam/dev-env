@@ -62,6 +62,7 @@ return {
           ["language_server_psalm.enabled"] = false,
         },
       })
+      vim.lsp.config("pyright", { capabilities = capabilities })
       vim.lsp.config("sqlls", { capabilities = capabilities })
       vim.lsp.config("ts_ls", { capabilities = capabilities })
       vim.lsp.config("yamlls", { capabilities = capabilities })
@@ -77,6 +78,7 @@ return {
       vim.lsp.enable("lua_ls")
       vim.lsp.enable("marksman")
       vim.lsp.enable("phpactor")
+      vim.lsp.enable("pyright")
       vim.lsp.enable("sqlls")
       vim.lsp.enable("ts_ls")
       vim.lsp.enable("yamlls")

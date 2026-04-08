@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+selected=$(find ~/personal ~/work/* -mindepth 0 -maxdepth 0 -type d | fzf)
+if [[ -z $selected ]]; then
+  exit 0
+fi
+
+selected_user=$(printf '%s\n' "itsnewtjam" "JarboMarketing" | fzf)
+if [[ -z $selected_user ]]; then
+  exit 0
+fi
+
+repos=$(gh repo list $selected_user --no-archived --json name -q 'map(.name) | .[]')
+
+existing=$(find $selected/* -mindepth 0 -maxdepth 0 -type d -printf '%f\n')
+repos=($(printf '%s\n' "$repos" "$existing" | sort | uniq -u))
+
+selected_repo=$(printf '%s\n' ${repos[@]/#/$selected_user/} | fzf)
+if [[ -z $selected_repo ]]; then
+  exit 0
+fi
+
+IFS='/' read -ra repo_path <<< "$selected_repo"
+repo=${repo_path[1]}
+
+echo "Repo User: $selected_user"
+echo "Repo Name: $repo"
+
+new_dir=$selected/$repo
+
+session_name=$(basename "$new_dir" | tr . _)
+
+mkdir $new_dir
+
+git clone https://github.com/$selected_repo.git $new_dir
+
+tmux_running=$(pgrep tmux)
+
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+  tmux new-session -s "$new_dir" -c "$new_dir"
+  exit 0
+fi
+
+if ! tmux has-session -t=$session_name 2> /dev/null; then
+  tmux new-session -ds "$new_dir" -c "$new_dir"
+fi
+
+tmux switch-client -t "$new_dir"
