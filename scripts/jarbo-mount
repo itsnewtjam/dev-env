@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+usage() {
+  local prog=${0##*/}
+  cat << EOF
+Usage: $prog [options]
+
+Mount Jarbo remote resources.
+By default, mounts the Active Clients share to ~/mounts/active-clients
+
+Options
+  -h                Print usage message
+  -s <share>        File to convert
+  -m <mount point>  Convert files with the given extension in the current directory
+  -c                Mount a client SFTP
+  -u                Unmount a resource
+EOF
+}
+
+fatal() {
+  echo "$@" >&2
+  exit 1
+}
+
+sg_mount() {
+  client_dir=$(find ~/work -mindepth 1 -maxdepth 1 -type d -exec test -e "{}/mntconfig" \; -print | fzf)
+  if [[ -z $client_dir ]]; then
+    echo "No client selected"
+    exit 0
+  fi
+
+  read -r host user port path < "$client_dir/mntconfig"
+  mkdir $client_dir/mnt 2> /dev/null
+  sshfs $user@$host:$path $client_dir/mnt -p $port -o IdentityFile=~/work/general/sgkey
+  echo "Mounted $(basename $client_dir)"
+}
+
+unmount() {
+  mount_dir=$(findmnt -o Target -n -D | grep -oP '(/home/[^/]+/mounts/.+)|(/home/[^/]+/work/[^/]+)' | fzf)
+  if [[ -z $mount_dir ]]; then
+    echo "No mount selected"
+    exit 0
+  fi
+
+  case "$mount_dir" in
+    $HOME/mounts*) sudo umount $mount_dir;;
+    $HOME/work*) fusermount3 -u $mount_dir/mnt;;
+  esac
+
+  echo "Unmounted $(basename $mount_dir)"
+}
+
+SHARE="Active\ Clients"
+MOUNT="active-clients"
+
+main() {
+  local opt OPTIND OPTARG
+  while getopts 'hs:m:cu' opt; do
+    case "$opt" in
+      h) usage; exit 0;;
+      s) SHARE=$OPTARG;;
+      m) MOUNT=$OPTARG;;
+      c) sg_mount; exit 0;;
+      u) unmount; exit 0;;
+      *) usage; exit 1;;
+    esac
+  done
+
+  if [[ ! -f "$HOME/.smbcredentials" ]]; then
+    fatal "Missing credentials file, create it at ~/.smbcredentials"
+  elif [[ $(stat -c '%a' "$HOME/.smbcredentials" 2> /dev/null) != "600" ]]; then
+    fatal "Credentials file permissions are not 600"
+  fi
+
+  mkdir -p "$HOME/mounts/$MOUNT" 2> /dev/null
+  eval sudo mount -t cifs "//Jarbo.local/$SHARE" "$HOME/mounts/$MOUNT" -o credentials=$HOME/.smbcredentials,uid=$(id -u $USER),gid=$(id -g $USER),forceuid,forcegid
+  echo "Mounted $SHARE to $MOUNT"
+}
+
+main "$@"
