@@ -30,6 +30,22 @@ return {
       vim.lsp.config("css_variables", { capabilities = capabilities })
       vim.lsp.config("gopls", { capabilities = capabilities })
       vim.lsp.config("html", { capabilities = capabilities })
+      vim.lsp.config("intelephense", {
+        capabilities = capabilities,
+        settings = {
+          intelephense = {
+            environment = {
+              includePaths = {
+                os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
+                os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla",
+              },
+            },
+            telemetry = {
+              enabled = false
+            },
+          },
+        },
+      })
       vim.lsp.config("jsonls", { capabilities = capabilities })
       vim.lsp.config("jdtls", { capabilities = capabilities })
       vim.lsp.config("lua_ls", {
@@ -66,34 +82,6 @@ return {
         },
       })
       vim.lsp.config("marksman", { capabilities = capabilities })
-      vim.lsp.config("phpactor", {
-        capabilities = capabilities,
-        root_patterns = { "*.php" },
-        init_options = {
-          ["indexer.stub_paths"] = {
-            os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
-            os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla",
-          },
-          ["indexer.exclude_patterns"] = {
-            "*/tests/*",
-            "*/Tests/*",
-            "*/test/*",
-            "*/docs/*",
-            "*/build/*",
-            "*/tmp/*",
-            "*/cache/*",
-            "*/logs/*",
-            "*/node_modules/*",
-            "*/com_joomlaupdate/*",
-          },
-          ["language_server.diagnostic_ignore_codes"] = {
-            "worse.assignment_to_missing_property",
-          },
-          ["language_server_completion.trim_leading_dollar"] = true,
-          ["language_server_phpstan.enabled"] = false,
-          ["language_server_psalm.enabled"] = false,
-        },
-      })
       vim.lsp.config("pyright", { capabilities = capabilities })
       vim.lsp.config("sqlls", { capabilities = capabilities })
       vim.lsp.config("ts_ls", { capabilities = capabilities })
@@ -105,11 +93,11 @@ return {
       vim.lsp.enable("css_variables")
       vim.lsp.enable("gopls")
       vim.lsp.enable("html")
+      vim.lsp.enable("intelephense")
       vim.lsp.enable("jsonls")
       vim.lsp.enable("jdtls")
       vim.lsp.enable("lua_ls")
       vim.lsp.enable("marksman")
-      vim.lsp.enable("phpactor")
       vim.lsp.enable("pyright")
       vim.lsp.enable("sqlls")
       vim.lsp.enable("ts_ls")

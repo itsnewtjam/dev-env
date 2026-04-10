@@ -21,14 +21,6 @@ sudo pacman -S --needed \
 	vscode-json-languageserver \
   pyright
 
-# phpactor
-cd $LSPDIR
-git clone https://github.com/phpactor/phpactor.git
-cd phpactor
-composer update
-composer install
-cd /usr/local/bin
-sudo ln -s $LSPDIR/phpactor/bin/phpactor phpactor
-
-# sqlls
-npm i -g sql-language-server
+npm i -g \
+  sql-language-server \
+  intelephense
