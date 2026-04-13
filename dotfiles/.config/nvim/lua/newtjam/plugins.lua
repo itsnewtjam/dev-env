@@ -66,6 +66,11 @@ require("tree-sitter-manager").setup({
   },
   auto_install = true,
 })
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(args)
+    pcall(vim.treesitter.start, args.buf)
+  end,
+})
 
 local ts_builtin = require("telescope.builtin")
 local ts_themes = require("telescope.themes")
