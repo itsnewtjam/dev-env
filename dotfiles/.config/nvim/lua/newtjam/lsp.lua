@@ -1,0 +1,133 @@
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+vim.lsp.config("bashls", { capabilities = capabilities })
+vim.lsp.config("clangd", { capabilities = capabilities })
+vim.lsp.config("cssls", { capabilities = capabilities })
+vim.lsp.config("css_variables", { capabilities = capabilities })
+vim.lsp.config("gopls", { capabilities = capabilities })
+vim.lsp.config("html", { capabilities = capabilities })
+vim.lsp.config("intelephense", {
+  capabilities = capabilities,
+  settings = {
+    intelephense = {
+      environment = {
+        includePaths = {
+          os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
+          os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla",
+        },
+      },
+      telemetry = {
+        enabled = false
+      },
+    },
+  },
+})
+vim.lsp.config("jsonls", { capabilities = capabilities })
+vim.lsp.config("jdtls", { capabilities = capabilities })
+vim.lsp.config("lua_ls", {
+  capabilities = capabilities,
+  on_init = function(client)
+    if client.workspace_folders then
+      local path = client.workspace_folders[1].name
+      if
+        path ~= vim.fn.stdpath('config')
+        and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.json'))
+      then
+        return
+      end
+    end
+
+    client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+      runtime = {
+        version = 'LuaJIT',
+        path = {
+          'lua/?.lua',
+          'lua/?/init.lua',
+        },
+      },
+      workspace = {
+        checkThirdParty = false,
+        library = {
+          vim.env.VIMRUNTIME,
+        },
+      },
+    })
+  end,
+  settings = {
+    Lua = {},
+  },
+})
+vim.lsp.config("marksman", { capabilities = capabilities })
+vim.lsp.config("pyright", { capabilities = capabilities })
+vim.lsp.config("sqlls", { capabilities = capabilities })
+vim.lsp.config("ts_ls", { capabilities = capabilities })
+vim.lsp.config("yamlls", { capabilities = capabilities })
+
+vim.lsp.enable("bashls")
+vim.lsp.enable("clangd")
+vim.lsp.enable("cssls")
+vim.lsp.enable("css_variables")
+vim.lsp.enable("gopls")
+vim.lsp.enable("html")
+vim.lsp.enable("intelephense")
+vim.lsp.enable("jsonls")
+vim.lsp.enable("jdtls")
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("marksman")
+vim.lsp.enable("pyright")
+vim.lsp.enable("sqlls")
+vim.lsp.enable("ts_ls")
+vim.lsp.enable("yamlls")
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function()
+    vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end)
+    vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end)
+    vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end)
+    vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_floatgoto_next() end)
+    vim.keymap.set("n", "[d", function() vim.diagnostic.jump({count = -1}) end)
+    vim.keymap.set("n", "]d", function() vim.diagnostic.jump({count = 1}) end)
+    vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end)
+    vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end)
+    vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end)
+    vim.keymap.set("n", "<C-h>", function() vim.lsp.buf.signature_help() end)
+ end,
+})
+
+local cmp = require("cmp")
+local cmp_select = {behavior = cmp.SelectBehavior.Select}
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      require('luasnip').lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+  }, {
+    { name = 'buffer' },
+  }),
+})
