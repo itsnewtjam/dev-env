@@ -54,6 +54,7 @@ lualine.setup {
 }
 
 require("tree-sitter-manager").setup({
+  border = "rounded",
   ensure_installed = {
     "lua",
     "javascript",
