@@ -49,11 +49,11 @@ optimize_file() {
   if $VERBOSE; then
     cmd="$cmd $dest"
   else
-    cmd="($cmd -hide_banner -loglevel quiet $dest) &> /dev/null & disown"
+    cmd="$cmd -hide_banner -loglevel quiet $dest &2> /dev/null & disown"
   fi
 
   echo "Optimizing $source..."
-  $("$cmd")
+  $cmd
   echo "    Optimized $source"
   oldbytes=`stat -c%s "$source"`
   oldsize=`awk -v n=$oldbytes 'BEGIN {printf "%.2f\n", (n/1000000)}'`

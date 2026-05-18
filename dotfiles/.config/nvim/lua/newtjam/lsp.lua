@@ -14,6 +14,7 @@ vim.lsp.config("intelephense", {
         includePaths = {
           os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
           os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla",
+          os.getenv('HOME') .. "/ref/joomla/joomla-addt",
         },
       },
       telemetry = {
