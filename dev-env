@@ -86,6 +86,7 @@ execute mkdir $HOME/personal
 execute mkdir $HOME/school
 execute mkdir $HOME/work
 execute mkdir $HOME/aur
+execute mkdir $HOME/screenshots
 
 execute mkdir $HOME/.local/bin
 execute mkdir $HOME/scriptlib

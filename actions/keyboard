@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+sudo cp $HOME/personal/dev-env/dotfiles/udev/50-zsa.rules /etc/udev/rules.d/50-zsa.rules
+
+sudo groupadd plugdev
+sudo usermod -aG plugdev $USER

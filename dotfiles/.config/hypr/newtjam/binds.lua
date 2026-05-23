@@ -25,6 +25,10 @@ hl.bind(
   "Print",
   hl.dsp.exec_cmd("if area=$(slurp); then grim -g \"$area\" - | tee >(wl-copy) && dunstify \"Screenshot copied to clipboard\"; fi")
 )
+hl.bind(
+  "SHIFT + Print",
+  hl.dsp.exec_cmd("if area=$(slurp); then grim -g \"$area\" \"$HOME/screenshots/$(date +%F_%T)_s.png\" && dunstify \"Screenshot saved\"; fi")
+)
 
 hl.bind(mod_key("left"), hl.dsp.focus({ direction = "left" }))
 hl.bind(mod_key("right"), hl.dsp.focus({ direction = "right" }))
