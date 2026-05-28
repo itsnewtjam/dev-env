@@ -11,7 +11,7 @@ local float_rules = {
     width = 25,
     height = 54,
     patterns = {
-      "^Sign In %- Google Accounts",
+      "^Sign in %- Google Accounts",
     },
   },
 }
