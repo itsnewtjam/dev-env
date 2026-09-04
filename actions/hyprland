@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 
-sudo pacman -S --needed hyprland hypridle hyprlock hyprpaper xdg-desktop-portal-hyprland
+sudo pacman -S --needed \
+  hyprland \
+  hypridle \
+  hyprlock \
+  hyprpaper \
+  hyprshutdown \
+  xdg-desktop-portal-hyprland

@@ -5,6 +5,13 @@ hl.monitor({
   scale = 1.25,
 })
 
+hl.monitor({
+  output = "desc:Dell Inc. DELL U3415W PXF7994Q17NL",
+  mode = "preferred",
+  position = "auto",
+  scale = 1.25,
+})
+
 hl.device({
   name = "tpps/2-elan-trackpoint",
   enabled = true,

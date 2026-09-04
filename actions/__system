@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+sudo pacman -S --needed \
+  base-devel \
+	ripgrep \
+	ffmpeg \
+	composer \
+	nvm \
+	go \
+	rust \
+	fzf \
+	sshfs \
+	udiskie \
+	unzip \
+	usbutils \
+	interception-tools \
+	brightnessctl \
+	ttf-sourcecodepro-nerd \
+  ttf-ibm-plex \
+	wl-clipboard \
+	cups \
+	ghostscript \
+  man-db \
+  man-pages \
+	less \
+	xdg-desktop-portal-gtk \
+	github-cli \
+	slurp \
+	grim \
+	wine \
+	wine-mono \
+	libwebp \
+	libwebp-utils \
+	jq \
+	openbsd-netcat \
+	nwg-look \
+  pacman-contrib

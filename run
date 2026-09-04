@@ -53,11 +53,14 @@ main() {
 
   cd $SCRIPT_DIR
   if $ALL; then
-    selected_actions=$(find ./actions -executable -type f -not -name '_[a-z]*' -printf '%f\n' | LC_COLLATE=C sort)
+    selected_actions=$(find ./actions -executable -type f -not -name '_*' -printf '%f\n' | LC_COLLATE=C sort)
   else
     selected_actions=$(find ./actions -executable -type f -printf '%f\n' | LC_COLLATE=C sort -r | fzf -m --bind 'space:toggle+clear-query' --marker ' ')
   fi
 
+  if $ALL; then
+    execute ./actions/__init
+  fi
   for action in $selected_actions; do
     execute ./actions/$action
   done

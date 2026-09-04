@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+sudo pacman -S --needed nvm
+
+source ~/.nvm/nvm.sh
+source ~/.config/nvm/nvm.sh
+
+nvm install 24
+nvm use 24

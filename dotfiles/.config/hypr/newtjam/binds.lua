@@ -8,6 +8,20 @@ hl.bind(
 )
 hl.bind(mod_key("SHIFT + B"), hl.dsp.exec_cmd("pkill waybar && waybar &"))
 hl.bind(mod_key("SHIFT + F"), hl.dsp.window.float())
+hl.bind(mod_key("SHIFT + P"), function()
+  if (hl.get_active_window().pinned) then
+    hl.dispatch(hl.dsp.window.float())
+  else
+    hl.dispatch(hl.dsp.window.float())
+    hl.dispatch(hl.dsp.window.pin())
+    hl.dispatch(hl.dsp.window.resize({ x = 500, y = 281 }))
+    hl.dispatch(hl.dsp.window.move({
+      x = (hl.get_active_monitor().width / 1.25) - 500,
+      y = 30,
+      relative = false,
+    }))
+  end
+end)
 hl.bind(mod_key("SHIFT + A"), hl.dsp.window.fullscreen({ mode = "maximized" }))
 
 hl.bind(mod_key("Q"), hl.dsp.window.kill())
@@ -65,6 +79,11 @@ hl.bind(mod_key("SHIFT + H"), hl.dsp.window.swap({ direction = "left" }))
 hl.bind(mod_key("SHIFT + L"), hl.dsp.window.swap({ direction = "right" }))
 hl.bind(mod_key("SHIFT + K"), hl.dsp.window.swap({ direction = "up" }))
 hl.bind(mod_key("SHIFT + J"), hl.dsp.window.swap({ direction = "down" }))
+
+hl.bind(mod_key("ALT + H"), hl.dsp.window.move({ direction = "left" }))
+hl.bind(mod_key("ALT + L"), hl.dsp.window.move({ direction = "right" }))
+hl.bind(mod_key("ALT + K"), hl.dsp.window.move({ direction = "up" }))
+hl.bind(mod_key("ALT + J"), hl.dsp.window.move({ direction = "down" }))
 
 hl.bind(
   "XF86AudioRaiseVolume",

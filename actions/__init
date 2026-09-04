@@ -1,48 +1,5 @@
 #!/usr/bin/env bash
 
-sudo pacman -S --needed \
-  base-devel \
-	ripgrep \
-	ffmpeg \
-	composer \
-	nvm \
-	go \
-	rust \
-	fzf \
-	sshfs \
-	udiskie \
-	unzip \
-	usbutils \
-	interception-tools \
-	brightnessctl \
-	ttf-sourcecodepro-nerd \
-  ttf-ibm-plex \
-	wl-clipboard \
-	cups \
-	ghostscript \
-	less \
-	xdg-desktop-portal-gtk \
-	github-cli \
-	slurp \
-	grim \
-	wine \
-	wine-mono \
-	libwebp \
-	libwebp-utils \
-	jq \
-	openbsd-netcat \
-	nwg-look \
-  hyprshutdown
-
-source ~/.nvm/nvm.sh
-source ~/.config/nvm/nvm.sh
-
-nvm install 24
-nvm use 24
-
-cd $HOME/aur
-
-git clone https://aur.archlinux.org/yay.git
-cd yay
-
-makepkg -si
+~/personal/dev-env/actions/__system
+~/personal/dev-env/actions/__nvm
+~/personal/dev-env/actions/__aur
