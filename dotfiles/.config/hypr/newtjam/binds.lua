@@ -16,7 +16,7 @@ hl.bind(mod_key("SHIFT + P"), function()
     hl.dispatch(hl.dsp.window.pin())
     hl.dispatch(hl.dsp.window.resize({ x = 500, y = 281 }))
     hl.dispatch(hl.dsp.window.move({
-      x = (hl.get_active_monitor().width / 1.25) - 500,
+      x = (hl.get_active_monitor().width / hl.get_active_monitor().scale) - 500,
       y = 30,
       relative = false,
     }))
