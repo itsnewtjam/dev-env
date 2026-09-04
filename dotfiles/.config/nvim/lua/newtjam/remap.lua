@@ -28,5 +28,6 @@ vim.keymap.set("n", "<leader><CR>", function()
     vim.cmd("cc " .. #items)
   else
     vim.notify("Quickfix empty")
+    vim.cmd("cclose")
   end
 end)

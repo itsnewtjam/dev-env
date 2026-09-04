@@ -23,4 +23,5 @@ sudo pacman -S --needed \
 
 npm i -g \
   sql-language-server \
-  intelephense
+  intelephense \
+  some-sass-language-server

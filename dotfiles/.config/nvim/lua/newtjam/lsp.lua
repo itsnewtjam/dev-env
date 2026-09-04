@@ -12,6 +12,8 @@ vim.lsp.config("intelephense", {
     intelephense = {
       environment = {
         includePaths = {
+          os.getenv('HOME') .. "/ref/joomla/joomla-cms/administrator/components",
+          os.getenv('HOME') .. "/ref/joomla/joomla-cms/components",
           os.getenv('HOME') .. "/ref/joomla/joomla-cms/libraries/src",
           os.getenv('HOME') .. "/ref/joomla/framework/vendor/joomla",
           os.getenv('HOME') .. "/ref/joomla/joomla-addt",
@@ -60,6 +62,7 @@ vim.lsp.config("lua_ls", {
 })
 vim.lsp.config("marksman", { capabilities = capabilities })
 vim.lsp.config("pyright", { capabilities = capabilities })
+vim.lsp.config("somesass_ls", { capabilities = capabilities })
 vim.lsp.config("sqlls", { capabilities = capabilities })
 vim.lsp.config("ts_ls", { capabilities = capabilities })
 vim.lsp.config("yamlls", { capabilities = capabilities })
@@ -76,6 +79,7 @@ vim.lsp.enable("jdtls")
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("marksman")
 vim.lsp.enable("pyright")
+vim.lsp.enable("somesass_ls")
 vim.lsp.enable("sqlls")
 vim.lsp.enable("ts_ls")
 vim.lsp.enable("yamlls")
