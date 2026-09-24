@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+FSTAB_ENTRIES="$HOME/personal/dev-env/system/etc/jarbo.fstab"
+
+while IFS= read -r entry || [[ -n "$entry" ]]; do
+  # Skip blank lines and comments
+  [[ -z "$entry" || "$entry" =~ ^[[:space:]]*# ]] && continue
+
+  entry="${entry//__HOME__/$HOME}"
+  entry="${entry//__USER__/$(id -u $USER)}"
+  entry="${entry//__GROUP__/$(id -g $USER)}"
+
+  # Add entry if it isn't already present
+  if ! grep -Fqx "$entry" /etc/fstab; then
+    printf '\n%s\n' "$entry" | sudo tee -a /etc/fstab > /dev/null
+  fi
+done < "$FSTAB_ENTRIES"

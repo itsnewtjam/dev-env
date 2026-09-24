@@ -1,0 +1,1 @@
+//Jarbo.local/Active\040Clients __HOME__/mounts/active-clients cifs users,credentials=__HOME__/.smbcredentials,uid=__USER__,gid=__GROUP__,forceuid,forcegid,noauto,x-systemd.automount 0 0

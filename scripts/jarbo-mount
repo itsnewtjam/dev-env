@@ -6,13 +6,9 @@ usage() {
 Usage: $prog [options]
 
 Mount Jarbo remote resources.
-By default, mounts the Active Clients share to ~/mounts/active-clients
 
 Options
   -h                Print usage message
-  -s <share>        File to convert
-  -m <mount point>  Convert files with the given extension in the current directory
-  -c                Mount a client SFTP
   -u                Unmount a resource
 EOF
 }
@@ -22,46 +18,90 @@ fatal() {
   exit 1
 }
 
-sg_mount() {
-  client_dir=$(find ~/work -mindepth 1 -maxdepth 1 -type d -exec test -e "{}/mntconfig" \; -print | fzf)
-  if [[ -z $client_dir ]]; then
-    echo "No client selected"
-    exit 0
-  fi
+mount_targets=$(
+  {
+    awk -v home=$HOME '
+      !/^[[:space:]]*#/ && NF >= 2 {
+        target = $2
+        sub(/__HOME__/, home, target)
+        name = target
+        sub(/^.*\//, "", name)
+        print "CIFS\t" name "\t" target
+      }
+    ' "$HOME/personal/dev-env/system/etc/jarbo.fstab"
 
-  read -r host user port path < "$client_dir/mntconfig"
-  mkdir $client_dir/mnt 2> /dev/null
-  sshfs $user@$host:$path $client_dir/mnt -p $port -o IdentityFile=~/work/general/sgkey
-  echo "Mounted $(basename $client_dir)"
-}
+    find "$HOME/work" \
+      -mindepth 1 \
+      -maxdepth 1 \
+      -type d \
+      -exec test -e "{}/mntconfig" \; \
+      -printf 'SSHFS\t%f\t%p/mnt\n'
+  } | sort -u
+)
 
-unmount() {
-  mount_dir=$(findmnt -o Target -n -D | grep -oP '(/home/[^/]+/mounts/.+)|(/home/[^/]+/work/[^/]+)' | fzf)
-  if [[ -z $mount_dir ]]; then
+mounted=$(
+  awk -F '\t' '
+    NR==FNR { mounted_paths[$0]; next }
+    $3 in mounted_paths
+  ' <(findmnt -o TARGET -D -n) <(printf '%s\n' "$mount_targets")
+)
+
+available=$(
+  awk -F '\t' '
+    NR==FNR { mounted_paths[$0]; next }
+    !($3 in mounted_paths)
+  ' <(findmnt -o TARGET -D -n) <(printf '%s\n' "$mount_targets")
+)
+
+select_mount() {
+  mount_option=$(printf '%s\n' "$available" | fzf --delimiter=$'\t' --with-nth=2)
+  if [[ -z "$mount_option" ]]; then
     echo "No mount selected"
     exit 0
   fi
 
-  case "$mount_dir" in
-    $HOME/mounts*) sudo umount $mount_dir;;
-    $HOME/work*) fusermount3 -u $mount_dir/mnt;;
+  IFS=$'\t' read -r type name target <<< "$mount_option"
+
+  case "$type" in
+    CIFS) 
+      mkdir -p "$target" 2> /dev/null
+      mount "$target"
+      ;;
+    SSHFS) 
+      client_dir=$(dirname "$target")
+      read -r host user port path < "$client_dir/mntconfig"
+      mkdir $target 2> /dev/null
+      sshfs $user@$host:$path $target -p $port -o IdentityFile=~/work/general/sgkey
+      ;;
+    *) echo "Unknown mount type $type" >&2; exit 1;;
   esac
 
-  echo "Unmounted $(basename $mount_dir)"
+  echo "Mounted $name"
 }
 
-SHARE="Active\ Clients"
-MOUNT="active-clients"
+select_unmount() {
+  mount_option=$(printf '%s\n' "$mounted" | fzf --delimiter=$'\t' --with-nth=2)
+  if [[ -z "$mount_option" ]]; then
+    echo "No mount selected"
+    exit 0
+  fi
+
+  IFS=$'\t' read -r type name target <<< "$mount_option"
+
+  case "$target" in
+    $HOME/mounts*) umount $target;;
+    $HOME/work*) fusermount3 -u $target;;
+  esac
+
+  echo "Unmounted $name"
+}
 
 main() {
   local opt OPTIND OPTARG
-  while getopts 'hs:m:cu' opt; do
+  while getopts 'hu' opt; do
     case "$opt" in
       h) usage; exit 0;;
-      s) SHARE=$OPTARG;;
-      m) MOUNT=$OPTARG;;
-      c) sg_mount; exit 0;;
-      u) unmount; exit 0;;
+      u) select_unmount; exit 0;;
       *) usage; exit 1;;
     esac
   done
@@ -72,9 +112,7 @@ main() {
     fatal "Credentials file permissions are not 600"
   fi
 
-  mkdir -p "$HOME/mounts/$MOUNT" 2> /dev/null
-  eval sudo mount -t cifs "//Jarbo.local/$SHARE" "$HOME/mounts/$MOUNT" -o credentials=$HOME/.smbcredentials,uid=$(id -u $USER),gid=$(id -g $USER),forceuid,forcegid
-  echo "Mounted $SHARE to $MOUNT"
+  select_mount
 }
 
 main "$@"
