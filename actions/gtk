@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cd $HOME/Downloads
+
+wget -nv -O Dracula-gtk.zip "https://github.com/dracula/gtk/archive/master.zip"
+
+sudo mkdir -p /usr/share/themes
+sudo unzip Dracula-gtk.zip -d /usr/share/themes
+sudo mv /usr/share/themes/gtk-master /usr/share/themes/Dracula

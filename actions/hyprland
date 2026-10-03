@@ -6,4 +6,6 @@ sudo pacman -S --needed \
   hyprlock \
   hyprpaper \
   hyprshutdown \
+  hyprtoolkit \
+  hyprpolkitagent \
   xdg-desktop-portal-hyprland

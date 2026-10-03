@@ -2,30 +2,18 @@ local function mod_key(key)
   return "SUPER + " .. key
 end
 
-hl.bind(
-  mod_key("SHIFT + Escape"),
-  hl.dsp.exec_cmd("hyprctl reload && hyprctl notify -1 3000 0 \"Config reloaded\"")
-)
-hl.bind(mod_key("SHIFT + B"), hl.dsp.exec_cmd("pkill waybar && waybar &"))
-hl.bind(mod_key("SHIFT + F"), hl.dsp.window.float())
-hl.bind(mod_key("SHIFT + P"), function()
-  if (hl.get_active_window().pinned) then
-    hl.dispatch(hl.dsp.window.float())
-  else
-    hl.dispatch(hl.dsp.window.float())
-    hl.dispatch(hl.dsp.window.pin())
-    hl.dispatch(hl.dsp.window.resize({ x = 500, y = 281 }))
-    hl.dispatch(hl.dsp.window.move({
-      x = (hl.get_active_monitor().width / hl.get_active_monitor().scale) - 500,
-      y = 30,
-      relative = false,
-    }))
-  end
+hl.bind(mod_key("SHIFT + S"), hl.dsp.submap("sys"))
+hl.define_submap("sys", "reset", function()
+  hl.bind(
+    "C",
+    hl.dsp.exec_cmd("hyprctl reload && hyprctl notify -1 3000 0 \"Config reloaded\"")
+  )
+  hl.bind("B", hl.dsp.exec_cmd("pkill waybar && waybar &"))
+
+  hl.bind("catchall", hl.dsp.submap("reset"))
 end)
-hl.bind(mod_key("SHIFT + A"), hl.dsp.window.fullscreen({ mode = "maximized" }))
 
 hl.bind(mod_key("Q"), hl.dsp.window.kill())
-hl.bind(mod_key("M"), hl.dsp.exit())
 hl.bind(
   mod_key("Space"),
   hl.dsp.exec_cmd("rofi -show combi -combi-modes \"drun,power:~/.config/rofi/powermenu\" -modes combi")
@@ -64,26 +52,49 @@ hl.bind(mod_key("8"), hl.dsp.focus({ workspace = 8 }))
 hl.bind(mod_key("9"), hl.dsp.focus({ workspace = 9 }))
 hl.bind(mod_key("0"), hl.dsp.focus({ workspace = 10 }))
 
-hl.bind(mod_key("SHIFT + 1"), hl.dsp.window.move({ workspace = 1 }))
-hl.bind(mod_key("SHIFT + 2"), hl.dsp.window.move({ workspace = 2 }))
-hl.bind(mod_key("SHIFT + 3"), hl.dsp.window.move({ workspace = 3 }))
-hl.bind(mod_key("SHIFT + 4"), hl.dsp.window.move({ workspace = 4 }))
-hl.bind(mod_key("SHIFT + 5"), hl.dsp.window.move({ workspace = 5 }))
-hl.bind(mod_key("SHIFT + 6"), hl.dsp.window.move({ workspace = 6 }))
-hl.bind(mod_key("SHIFT + 7"), hl.dsp.window.move({ workspace = 7 }))
-hl.bind(mod_key("SHIFT + 8"), hl.dsp.window.move({ workspace = 8 }))
-hl.bind(mod_key("SHIFT + 9"), hl.dsp.window.move({ workspace = 9 }))
-hl.bind(mod_key("SHIFT + 0"), hl.dsp.window.move({ workspace = 10 }))
+hl.bind(mod_key("SHIFT + W"), hl.dsp.submap("window"))
+hl.define_submap("window", "reset", function()
+  hl.bind("1", hl.dsp.window.move({ workspace = 1 }))
+  hl.bind("2", hl.dsp.window.move({ workspace = 2 }))
+  hl.bind("3", hl.dsp.window.move({ workspace = 3 }))
+  hl.bind("4", hl.dsp.window.move({ workspace = 4 }))
+  hl.bind("5", hl.dsp.window.move({ workspace = 5 }))
+  hl.bind("6", hl.dsp.window.move({ workspace = 6 }))
+  hl.bind("7", hl.dsp.window.move({ workspace = 7 }))
+  hl.bind("8", hl.dsp.window.move({ workspace = 8 }))
+  hl.bind("9", hl.dsp.window.move({ workspace = 9 }))
+  hl.bind("0", hl.dsp.window.move({ workspace = 10 }))
 
-hl.bind(mod_key("SHIFT + H"), hl.dsp.window.swap({ direction = "left" }))
-hl.bind(mod_key("SHIFT + L"), hl.dsp.window.swap({ direction = "right" }))
-hl.bind(mod_key("SHIFT + K"), hl.dsp.window.swap({ direction = "up" }))
-hl.bind(mod_key("SHIFT + J"), hl.dsp.window.swap({ direction = "down" }))
+  hl.bind("H", hl.dsp.window.swap({ direction = "left" }))
+  hl.bind("L", hl.dsp.window.swap({ direction = "right" }))
+  hl.bind("K", hl.dsp.window.swap({ direction = "up" }))
+  hl.bind("J", hl.dsp.window.swap({ direction = "down" }))
 
-hl.bind(mod_key("ALT + H"), hl.dsp.window.move({ direction = "left" }))
-hl.bind(mod_key("ALT + L"), hl.dsp.window.move({ direction = "right" }))
-hl.bind(mod_key("ALT + K"), hl.dsp.window.move({ direction = "up" }))
-hl.bind(mod_key("ALT + J"), hl.dsp.window.move({ direction = "down" }))
+  hl.bind("mouse:272", hl.dsp.window.drag())
+  hl.bind("SHIFT + H", hl.dsp.window.move({ direction = "left" }))
+  hl.bind("SHIFT + L", hl.dsp.window.move({ direction = "right" }))
+  hl.bind("SHIFT + K", hl.dsp.window.move({ direction = "up" }))
+  hl.bind("SHIFT + J", hl.dsp.window.move({ direction = "down" }))
+
+  hl.bind("A", hl.dsp.window.fullscreen({ mode = "maximized" }))
+  hl.bind("F", hl.dsp.window.float())
+  hl.bind("P", function()
+    if (hl.get_active_window().pinned) then
+      hl.dispatch(hl.dsp.window.float())
+    else
+      hl.dispatch(hl.dsp.window.float())
+      hl.dispatch(hl.dsp.window.pin())
+      hl.dispatch(hl.dsp.window.resize({ x = 500, y = 281 }))
+      hl.dispatch(hl.dsp.window.move({
+        x = (hl.get_active_monitor().width / hl.get_active_monitor().scale) - 500,
+        y = 30,
+        relative = false,
+      }))
+    end
+  end)
+
+  hl.bind("catchall", hl.dsp.submap("reset"))
+end)
 
 hl.bind(
   "XF86AudioRaiseVolume",

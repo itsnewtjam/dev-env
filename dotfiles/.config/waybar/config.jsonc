@@ -2,12 +2,15 @@
   "layer": "top",
   "position": "top",
   "height": 32,
-  "spacing": 0,
+  "spacing": 8,
   "modules-left": [
     "hyprland/workspaces",
     "tray"
   ],
-  "modules-center": ["hyprland/window"],
+  "modules-center": [
+    "hyprland/window",
+    "hyprland/submap"
+  ],
   "modules-right": [
     "custom/pocketwatch",
     "network",
@@ -18,6 +21,10 @@
   ],
   "hyprland/window": {
     "format": ""
+  },
+  "hyprland/submap": {
+    "format": "[ {} ]",
+    "tooltip": false
   },
   "hyprland/workspaces": {
     "all-outputs": true

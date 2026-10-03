@@ -6,10 +6,10 @@ if [ -z "$@" ]; then
 else
   case "$@" in
     *Shutdown*)
-      systemctl poweroff
+      hyprshutdown -t 'Shutting down...' --post-cmd 'shutdown -P 0'
       ;;
     *Reboot*)
-      systemctl reboot
+      hyprshutdown -t 'Rebooting...' --post-cmd 'reboot'
       ;;
   esac
 fi

@@ -5,7 +5,6 @@ sudo pacman -S --needed \
 	ripgrep \
 	ffmpeg \
 	composer \
-	nvm \
 	go \
 	rust \
 	fzf \
@@ -17,6 +16,7 @@ sudo pacman -S --needed \
 	brightnessctl \
 	ttf-sourcecodepro-nerd \
   ttf-ibm-plex \
+  noto-fonts-emoji \
 	wl-clipboard \
 	cups \
 	ghostscript \
@@ -24,7 +24,18 @@ sudo pacman -S --needed \
   man-pages \
 	less \
 	xdg-desktop-portal-gtk \
+  dolphin \
+  nano \
+  vim \
+  openssh \
+  htop \
+  wget \
+  smartmontools \
+  xdg-utils \
 	github-cli \
+  dunst \
+  qt5-wayland \
+  qt6-wayland \
 	slurp \
 	grim \
 	wine \
@@ -33,5 +44,4 @@ sudo pacman -S --needed \
 	libwebp-utils \
 	jq \
 	openbsd-netcat \
-	nwg-look \
   pacman-contrib

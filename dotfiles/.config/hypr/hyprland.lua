@@ -22,7 +22,7 @@ hl.config({
       enabled = true,
       range = 4,
       render_power = 3,
-      color = 0xee1a1a1a,
+      color = "0xee1a1a1a",
     },
   },
   animations = {
@@ -46,6 +46,15 @@ hl.monitor({
   mode = "1920x1080",
   position = "auto",
   scale = 1,
+})
+
+hl.layer_rule({
+  match = {
+    namespace = "waybar",
+  },
+  blur = true,
+  ignore_alpha = 0.4,
+  xray = true,
 })
 
 require("newtjam.animations")

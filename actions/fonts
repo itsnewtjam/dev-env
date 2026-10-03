@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-sudo pacman -S wimlib
-
 cd $HOME/aur
 
-git clone https://aur.archlinux.org/ttf-ms-win11.git
-cd ttf-ms-win11
+git clone https://aur.archlinux.org/win11fonts-auto.git
+cd win11fonts-auto
 
 makepkg -i

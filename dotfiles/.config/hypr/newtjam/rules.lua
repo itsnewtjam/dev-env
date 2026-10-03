@@ -1,45 +1,37 @@
-local float_rules = {
-  {
-    width = 30,
-    height = 54,
-    patterns = {
-      "%(Bitwarden.*Password Manager%) %- Bitwarden",
-      "^Bitwarden$",
-    },
-  },
-  {
-    width = 25,
-    height = 54,
-    patterns = {
-      "^Sign in %- Google Accounts",
-    },
-  },
-}
-
-local function matches(title, rule)
-  for _, pattern in ipairs(rule.patterns) do
-    if title:match(pattern) then return true end
-  end
-  return false
+local function popup(win, x, y)
+  x = x or 450
+  y = y or 600
+  hl.dispatch(hl.dsp.window.resize({ x = x, y = y, window = win }))
+  hl.dispatch(hl.dsp.window.center({ window = win }))
+  hl.dispatch(hl.dsp.focus({ window = win }))
 end
 
-hl.on("window.title", function(window)
-  local title = window.title or ""
-  for _, rule in ipairs(float_rules) do
-    if matches(title, rule) then
-      local monitor = hl.get_active_monitor()
-      if not monitor then return end
+hl.on("window.open", function(w)
+  if w.class ~= "firefox" then return end
+  if w.initial_title ~= "Mozilla Firefox" then return end
 
-      hl.dispatch(hl.dsp.window.float({ window = window, action = "on" }))
-      hl.dispatch(hl.dsp.window.center({ window = window, action = "on" }))
-      hl.dispatch(hl.dsp.window.resize({
-        window = window,
-        x = math.floor(monitor.width * rule.width / 100),
-        y = math.floor(monitor.height * rule.height / 100),
-      }))
-      return
+  local ff_windows = hl.get_windows({ class = "firefox" })
+  if #ff_windows <= 1 then return end
+
+  hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
+
+  local sub
+  sub = hl.on("window.title", function(tw)
+    if tw.address ~= w.address then return end
+    if tw.title == ""
+      or tw.title == "Mozilla Firefox"
+      or tw.title == "about:blank"
+      or tw.title:match("^about:.*Mozilla Firefox$") then return end
+
+    sub:remove()
+
+    if tw.title:match("^Extension:")
+      or tw.title:match("^Sign in %- Google Accounts") then
+      popup(tw)
+    else
+      hl.dispatch(hl.dsp.window.float({ action = "unset", window = tw }))
     end
-  end
+  end)
 end)
 
 hl.window_rule({
