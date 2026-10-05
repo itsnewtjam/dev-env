@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+JOOMLA_REF=$HOME/ref/joomla
+RESOURCE_PATH=$HOME/dev-env/resources/ref/joomla
+
+mkdir -p $JOOMLA_REF
+cd $JOOMLA_REF
+
+mkdir -p $JOOMLA_REF/joomla-addt
+cp $RESOURCE_PATH/joomla-addt/* $JOOMLA_REF/joomla-addt
+
+mkdir -p $JOOMLA_REF/framework
+cp $RESOURCE_PATH/framework/composer.json $JOOMLA_REF/framework/composer.json
+
+cd $JOOMLA_REF/framework
+composer install
+
+cd $JOOMLA_REF
+mkdir -p $JOOMLA_REF/joomla-cms
+rm -rf $JOOMLA_REF/joomla-cms/*
+
+git clone --branch 6.1-dev https://github.com/joomla/joomla-cms.git $JOOMLA_REF/joomla-cms

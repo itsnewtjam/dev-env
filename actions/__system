@@ -4,6 +4,7 @@ sudo pacman -S --needed \
   base-devel \
 	ripgrep \
 	ffmpeg \
+  imagemagick \
 	composer \
 	go \
 	rust \

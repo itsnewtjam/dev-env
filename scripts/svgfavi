@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+
+BG="#ffffff"
+EXCLUDE=""
+ICON="#000000"
+NAME=""
+OUTPUT="favicon-output"
+SHORT=""
+THEME="#ffffff"
+SIZE=70
+
+usage() {
+  local prog=${0##*/}
+  cat << EOF
+Usage: $prog [options] <svg>
+
+Create a favicon package from an SVG.
+
+Options:
+  -b, --bg <hex>          Use <hex> as the background color for the application
+  -x, --exclude <types>   Exclude certain types from output
+                          Accepts comma separated list of any of:
+                            i: .ico favicon
+                            s: .svg favicon
+                            a: Apple touch icon
+                            w: Web app manifest
+                            h: HTML head tags
+  -h, --help              Print usage message
+  -i, --icon <hex>        Use <hex> as the background color for the mobile icons
+  -n, --name <name>       Set the application name
+  -o, --output <dir>      Set the output directory
+  -s, --short <name>      Set the application short name
+  -t, --theme <hex>       Use <hex> as the theme color for the application
+  -z, --size <percent>    Make the SVG <percent>% of the mobile icon size
+EOF
+}
+
+fatal() {
+  echo "$@" >&2
+  exit 1
+}
+
+is_excluded() {
+  if [[ ",$EXCLUDE," == *,$1,* ]]; then
+    return 0
+  fi
+  return 1
+}
+
+is_integer() {
+  if [[ $1 =~ ^[0-9]+$ ]]; then
+    return 0
+  fi
+  return 1
+}
+
+parse_color() {
+  if [[ $1 =~ ^#?([[:xdigit:]]{3}|[[:xdigit:]]{6})$ ]]; then
+    COLOR="${1#\#}"
+    COLOR="#$COLOR"
+    return 0
+  fi
+  return 1
+}
+
+mobile_icon() {
+  file=$1
+  size=$2
+  output=$3
+
+  cp "$file" "$OUTPUT/tmp.svg"
+
+  sed -i 's/<\/svg>//' "$OUTPUT/tmp.svg"
+
+  rect_offset=$(( (SIZE - 100) / 2 ))
+  rect_size=$(( 100 + ((SIZE - 100) / -1) ))
+  rect="<rect id=\"frame_rect\" x=\"$rect_offset%\" y=\"$rect_offset%\" width=\"$rect_size%\" height=\"$rect_size%\"></rect>"
+
+  printf '%s\n' "$rect" >> "$OUTPUT/tmp.svg"
+  echo '</svg>' >> "$OUTPUT/tmp.svg"
+
+  actions="select-by-id:frame_rect;object-to-path;fit-canvas-to-selection;delete"
+  inkscape --actions="$actions" \
+    --export-filename="$OUTPUT/$output" \
+    --export-background="$ICON" \
+    -w ${size} -h ${size} "$OUTPUT/tmp.svg"
+  unlink "$OUTPUT/tmp.svg"
+}
+
+main() {
+  PARSED_ARGUMENTS=$(getopt -a -n svgfavi -o hm:i:b:t:n:s:x:o: --long help,margin:,icon:,bg:,theme:,name:,short:,exclude:,output: -- "$@")
+  VALID_ARGUMENTS=$?
+  if [ "$VALID_ARGUMENTS" != "0" ]; then
+    usage
+    exit 1
+  fi
+
+  eval set -- "$PARSED_ARGUMENTS"
+  while :
+  do
+    case "$1" in
+      -h | --help) usage; exit 1;;
+      -b | --bg)
+        if ! parse_color "$2"; then
+          echo "Invalid hex color: $2" >&2
+          exit 1
+        fi
+        BG="$2"; shift 2;;
+      -x | --exclude)
+        if [[ ! $2 =~ ^[isawh](,[isawh])*$ ]]; then
+          echo "Invalid exclude: $2" >&2
+          exit 1
+        fi
+        EXCLUDE="$2"; shift 2;;
+      -i | --icon)
+        if ! parse_color "$2"; then
+          echo "Invalid hex color: $2" >&2
+          exit 1
+        fi
+        ICON="$2"; shift 2;;
+      -n | --name) NAME="$2"; shift 2;;
+      -o | --output) OUTPUT="$2"; shift 2;;
+      -s | --short) SHORT="$2"; shift 2;;
+      -t | --theme)
+        if ! parse_color "$2"; then
+          echo "Invalid hex color: $2" >&2
+          exit 1
+        fi
+        THEME="$2"; shift 2;;
+      -z | --size)
+        if ! is_integer "$2"; then
+          echo "Invalid integer: $2" >&2
+          exit 1
+        fi
+        SIZE="$2"; shift 2;;
+      --) shift; break;;
+      *) usage; exit 1;;
+    esac
+  done
+
+  if ! mkdir -p "$OUTPUT"; then
+    echo "Could not create output directory: $OUTPUT" >&2
+    exit 1
+  fi
+
+  local html=()
+  local input_file="$1"
+
+  if [[ -z "$input_file" ]]; then
+    echo "No input file provided" >&2
+    exit 1
+  fi
+
+  if ! is_excluded "i"; then
+    files=()
+    for size in 16 32 48 128 256; do
+      inkscape --export-type=png \
+        --export-filename="$OUTPUT/$size.png" \
+        -w ${size} -h ${size} "$input_file"
+      files+=("$OUTPUT/$size.png")
+    done
+    magick "${files[@]}" -colors 256 "$OUTPUT/favicon.ico"
+    unlink "${files[@]}"
+    html+=('<link rel="alternate icon" href="favicon.ico" />')
+  fi
+
+  if ! is_excluded "s"; then
+    cp "$input_file" "$OUTPUT/favicon.svg"
+    html+=('<link rel="icon" type="image/svg+xml" href="favicon.svg" />')
+  fi
+
+  if ! is_excluded "a"; then
+    mobile_icon "$input_file" 180 "apple-touch-icon.png"
+    html+=('<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />')
+  fi
+
+  if ! is_excluded "w"; then
+    for size in 192 512; do
+      mobile_icon "$input_file" ${size} "web-app-manifest-${size}x${size}.png"
+    done
+
+    json="{\"icons\":[{\"src\":\"/web-app-manifest-192x192.png\",\"sizes\":\"192x192\",\"type\":\"image/png\",\"purpose\":\"maskable\"},{\"src\":\"/web-app-manifest-512x512.png\",\"sizes\":\"512x512\",\"type\":\"image/png\",\"purpose\":\"maskable\"}],\"theme_color\":\"$THEME\",\"background_color\":\"$BG\",\"display\":\"standalone\""
+    if [[ -n "$NAME" ]]; then
+      json+=",\"name\":\"$NAME\""
+    fi
+    if [[ -n "$SHORT" ]]; then
+      json+=",\"short_name\":\"$SHORT\""
+    fi
+    json+="}"
+    echo "$json" | jq > "$OUTPUT/site.webmanifest"
+
+    html+=('<link rel="manifest" href="/site.webmanifest" />')
+  fi
+
+  if ! is_excluded "h"; then
+    printf '%s\n' "${html[@]}" > "$OUTPUT/tags.html"
+  fi
+}
+
+main "$@"
